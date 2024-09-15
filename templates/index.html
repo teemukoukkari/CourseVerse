@@ -1,4 +1,26 @@
 {% extends "layout.html" %}
 {% block content %}
 <h2>Courses</h2>
+{% if user.role == "teacher" %}
+<form action="/courses" method="POST">
+    <strong>Create new:</strong>
+    name: <input type="text" name="name"/>
+    description: <input type="text" name="description"/>
+    <button type="submit">Create</button>
+</form>
+{% endif %}
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Teacher</th>
+        </tr>
+        {% for course in courses %}
+            <tr>
+                <td>{{course.name}}</td>
+                <td>{{course.teacher.name}}</td>
+            </tr>
+        {% endfor %}
+    </thead>
+</table>
 {% endblock %}

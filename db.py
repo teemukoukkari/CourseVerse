@@ -7,7 +7,7 @@ db = None
 app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URI")
 db = SQLAlchemy(app)
 
-def db_execute(sql, args):
+def db_execute(sql, args={}):
     global db
     return db.session.execute(text(sql), args)
 
