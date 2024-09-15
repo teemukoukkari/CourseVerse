@@ -4,6 +4,11 @@
 <form action="/register" method="POST">
     username: <input type="text" name="username"/><br>
     password: <input type="password" name="password"/><br>
+    role:
+    <select name="role">
+        <option value="student">student</option>
+        <option value="teacher">teacher</option>
+    </select><br>
     <button type="submit">Register</button>
 </form>
 {% endblock %}

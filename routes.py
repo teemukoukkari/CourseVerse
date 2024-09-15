@@ -19,9 +19,6 @@ def login():
     if request.method == "GET":
         return render_template("login.html", user=None)
     
-    if "username" not in request.form or "password" not in request.form:
-        return "Username and password required", 400
-    
     username = request.form["username"]
     password = request.form["password"]
 
@@ -41,13 +38,11 @@ def register():
     if request.method == "GET":
         return render_template("register.html", user=None)
     
-    if "username" not in request.form or "password" not in request.form:
-        return "Username and password required", 400
-    
     username = request.form["username"]
     password = request.form["password"]
+    role = request.form["role"]
 
-    user = users.register(username, password)
+    user = users.register(username, password, role)
     if not user:
         return "Failed to register.", 400
     session["user"] = user
