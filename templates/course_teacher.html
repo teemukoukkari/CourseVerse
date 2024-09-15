@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>{{course.name}}</h2>
+<p>{{course.description}}</p>
+<hr/>
+<h2>Contents</h2>
+{% for content in course.contents %}
+<div style="border:1px solid black; margin:3px;">
+    {% if content.type == "material" %}
+        {{content.text}}
+    {% endif %}
+</div>
+{% endfor %}
+<hr/>
+<h2>Add text material</h2>
+<form action="add_material" method="POST">
+    Content:<br/>
+     <textarea type="text" name="content">
+
+     </textarea><br/>
+    <button type="submit">Add</button>
+</form>
+{% endblock %}

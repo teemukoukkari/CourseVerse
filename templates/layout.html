@@ -6,9 +6,10 @@
     </head>
     <body>
         {% if user != None %}
-            <form action="/logout" method="POST">
-                Logged in as {{user.username}} ({{user.role}}). <button>Logout</button>
-            </form>
+            Logged in as {{user.username}} ({{user.role}}). 
+            <a href="/logout">
+                <button>Logout</button>
+            </a>
         {% else %}
             Not logged in. 
             <a href="/login">

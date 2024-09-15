@@ -53,3 +53,19 @@ def create_course():
     if not courses.create(name, description):
         return "Failed to create course.", 400
     return redirect("/")
+
+@app.route("/courses/<id>/")
+def get_course(id):
+    course = courses.get(id)
+    print(course)
+
+    user = users.get()
+    if (user["role"] == "teacher"):
+        return render_template("course_teacher.html", user=user, course=course)
+    return "TODO"
+
+@app.route("/courses/<id>/add_material", methods=["POST"])
+def add_material(id):
+    content = request.form["content"]
+    courses.add_material(id, content)
+    return redirect("/courses/" + id)
