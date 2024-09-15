@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>CourseVerse</title>
+    </head>
+    <body>
+        {% if user != None %}
+            <form action="/logout" method="POST">
+                Logged in as {{user.username}}. <button>Logout</button>
+            </form>
+        {% else %}
+            Not logged in. 
+            <a href="/login">
+                <button>Login</button>
+            </a>
+            <a href="/register">
+                <button>Register</button>
+            </a>
+        {% endif %}
+        <hr/>
+        {% block content %}{% endblock %}
+    </body>
+</html>
