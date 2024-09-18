@@ -2,7 +2,11 @@ import users
 from db import db_execute, db_commit
 
 def get_list():
-    sql = "SELECT C.id, C.name, U.id, U.username FROM courses C, users U WHERE C.teacher_id=U.id"
+    sql = """
+        SELECT C.id, C.name, U.id, U.username
+        FROM courses C, users U
+        WHERE C.teacher_id=U.id
+    """
     courses = db_execute(sql).fetchall()
     return list(map(lambda course: {
         "id": course[0],
@@ -19,23 +23,44 @@ def create(name, description):
         return False
     
     try:
-        sql = "INSERT INTO courses (name, description, teacher_id) VALUES(:name, :description, :teacher_id)"
-        db_execute(sql, {"name": name, "description": description, "teacher_id": user["id"]})
+        sql = """
+            INSERT INTO courses (
+                name, description, teacher_id
+            ) VALUES(
+                :name, :description, :teacher_id
+            )
+        """
+        db_execute(sql, {
+            "name": name,
+            "description": description,
+            "teacher_id": user["id"]
+        })
         db_commit()
-    except Exception as error:
-        print(error)
+    except:
         return False
     
     return True
 
 def get(course_id):
-    sql = "SELECT C.id, C.name, C.description, U.id, U.username FROM courses C, users U WHERE C.id=:id AND C.teacher_id=U.id"
+    sql = """
+        SELECT C.id, C.name, C.description, U.id, U.username
+        FROM courses C, users U
+        WHERE C.id=:id AND C.teacher_id=U.id
+    """
     course = db_execute(sql, {"id": course_id}).fetchone()
 
-    sql = "SELECT content FROM course_materials WHERE course_id=:course_id"
+    sql = """
+        SELECT content
+        FROM course_materials
+        WHERE course_id=:course_id
+    """
     materials = db_execute(sql, {"course_id": course_id}).fetchall()
 
-    sql = "SELECT id, question, choices FROM multiple_choices WHERE course_id=:course_id"
+    sql = """
+        SELECT id, question, choices
+        FROM multiple_choices
+        WHERE course_id=:course_id
+    """
     multiple_choices = db_execute(sql, {"course_id": course_id}).fetchall()
     
     return {
@@ -58,7 +83,13 @@ def get(course_id):
 
 def add_material(course_id, content):
     try:
-        sql = "INSERT INTO course_materials (course_id, content) VALUES (:course_id, :content)"
+        sql = """
+            INSERT INTO course_materials (
+                course_id, content
+            ) VALUES (
+                :course_id, :content
+            )
+        """
         db_execute(sql, {"course_id": course_id, "content": content})
         db_commit()
     except Exception as err:
@@ -69,11 +100,21 @@ def add_material(course_id, content):
 
 def add_multiple_choice(course_id, question, choices, correct_choices):
     try:
-        sql = """INSERT INTO multiple_choices (course_id, question, choices, correct_choices) VALUES (:course_id, :question, :choices, :correct_choices)"""
-        db_execute(sql, {"course_id": course_id, "question": question, "choices": ';'.join(choices), "correct_choices": ';'.join(correct_choices)})
+        sql = """
+            INSERT INTO multiple_choices (
+                course_id, question, choices, correct_choices
+            ) VALUES (
+                :course_id, :question, :choices, :correct_choices
+            )
+        """
+        db_execute(sql, {
+            "course_id": course_id,
+            "question": question,
+            "choices": ';'.join(choices),
+            "correct_choices": ';'.join(correct_choices)}
+        )
         db_commit()
-    except Exception as err:
-        print(err)
+    except:
         return False
     
     return True

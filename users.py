@@ -11,7 +11,11 @@ def get():
     return None
 
 def login(username, password):
-    sql = "SELECT id, username, password, role FROM users WHERE username=:username"
+    sql = """
+        SELECT id, username, password, role
+        FROM users
+        WHERE username=:username
+    """
     user = db_execute(sql, {"username": username}).fetchone()
 
     if user:
@@ -25,8 +29,18 @@ def login(username, password):
 def register(username, password, role):
     password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
     try:
-        sql = "INSERT INTO users (username, password, role) VALUES(:username,:password,:role)"
-        db_execute(sql, {"username": username, "password": password_hash, "role": role})
+        sql = """
+            INSERT INTO users (
+                username, password, role
+            ) VALUES(
+                :username,:password,:role
+            )
+        """
+        db_execute(sql, {
+            "username": username,
+            "password": password_hash,
+            "role": role
+        })
         db_commit()
     except Exception as error:
         return False
