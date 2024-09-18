@@ -8,16 +8,61 @@
 <div style="border:1px solid black; margin:3px;">
     {% if content.type == "material" %}
         {{content.text}}
+    {% elif content.type == "multiple_choice" %}
+        {{content.question}}
+        {% for choice in content.choices %}
+            <input type="checkbox"/>{{choice}}
+        {% endfor %}
     {% endif %}
 </div>
 {% endfor %}
 <hr/>
-<h2>Add text material</h2>
+<h3>Create text material</h3>
 <form action="add_material" method="POST">
     Content:<br/>
      <textarea type="text" name="content">
 
      </textarea><br/>
-    <button type="submit">Add</button>
+    <button type="submit">Create</button>
 </form>
+<h3>Create multiple choice</h3>
+<form action="add_multiple_choice" method="POST" id="multiple_choise_form">
+    Question: <input type="text" name="question"/><br>
+    Choices:
+</form>
+<div>
+    <button onclick="add_new()">Add</button> 
+    <button onclick="remove_last()">Remove</button><br>
+    <button onClick="submit_multiple_choice()">Create</button>
+    <script>
+        num_elements = 0;
+        add_new();add_new();add_new();add_new();
+        function add_new() {
+            var checkbox = document.createElement("input");
+            checkbox.setAttribute("type", "checkbox");
+            checkbox.setAttribute("name", "correct_" + num_elements);
+
+            var text = document.createElement("input");
+            text.setAttribute("type", "text");
+            text.setAttribute("name", "answer_" + num_elements)
+
+            var div = document.createElement("div");
+            div.setAttribute("id", "choice_" + num_elements);
+            div.appendChild(checkbox);
+            div.appendChild(text);
+
+            document.getElementById("multiple_choise_form").append(div);
+            num_elements++;
+        }
+        function remove_last() {
+            if (num_elements < 2) return;
+            var div = document.getElementById("choice_" + (num_elements-1));
+            div.parentNode.removeChild(div);
+            num_elements--;
+        }
+        function submit_multiple_choice() {
+            document.getElementById("multiple_choise_form").submit();
+        }
+    </script>
+</div>
 {% endblock %}

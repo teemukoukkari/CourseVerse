@@ -69,3 +69,22 @@ def add_material(id):
     content = request.form["content"]
     courses.add_material(id, content)
     return redirect("/courses/" + id)
+
+@app.route("/courses/<id>/add_multiple_choice", methods=["POST"])
+def add_multiple_choice(id):
+    question = request.form["question"]
+    choices = []
+    correct_choices = []
+    for i in range(0,100):
+        if "answer_" + str(i) in request.form:
+            if "correct_" + str(i) in request.form:
+                choices.append(request.form["answer_" + str(i)])
+            else:
+                choices.append(request.form["answer_" + str(i)])
+                correct_choices.append(request.form["answer_" + str(i)])
+        else:
+            break
+
+    courses.add_multiple_choice(id, question, choices, correct_choices)
+
+    return redirect("/courses/" + id)

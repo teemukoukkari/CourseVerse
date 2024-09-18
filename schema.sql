@@ -17,3 +17,11 @@ CREATE TABLE course_materials (
     course_id INTEGER REFERENCES courses NOT NULL,
     content TEXT
 );
+
+CREATE TABLE multiple_choices (
+    id SERIAL PRIMARY KEY,
+    course_id INTEGER REFERENCES courses NOT NULL,
+    question TEXT,
+    choices TEXT,
+    correct_choices TEXT
+);

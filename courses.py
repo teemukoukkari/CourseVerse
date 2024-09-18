@@ -35,6 +35,9 @@ def get(course_id):
     sql = "SELECT content FROM course_materials WHERE course_id=:course_id"
     materials = db_execute(sql, {"course_id": course_id}).fetchall()
 
+    sql = "SELECT id, question, choices FROM multiple_choices WHERE course_id=:course_id"
+    multiple_choices = db_execute(sql, {"course_id": course_id}).fetchall()
+    
     return {
         "id": course[0],
         "name": course[1],
@@ -46,13 +49,28 @@ def get(course_id):
         "contents": list(map(lambda x: {
             "type": "material",
             "text": x[0]
-        }, materials))
+        }, materials)) + list(map(lambda x: {
+            "type": "multiple_choice",
+            "question": x.question,
+            "choices": x.choices.split(";")
+        }, multiple_choices))
     }
 
 def add_material(course_id, content):
     try:
         sql = "INSERT INTO course_materials (course_id, content) VALUES (:course_id, :content)"
         db_execute(sql, {"course_id": course_id, "content": content})
+        db_commit()
+    except Exception as err:
+        print(err)
+        return False
+    
+    return True
+
+def add_multiple_choice(course_id, question, choices, correct_choices):
+    try:
+        sql = """INSERT INTO multiple_choices (course_id, question, choices, correct_choices) VALUES (:course_id, :question, :choices, :correct_choices)"""
+        db_execute(sql, {"course_id": course_id, "question": question, "choices": ';'.join(choices), "correct_choices": ';'.join(correct_choices)})
         db_commit()
     except Exception as err:
         print(err)
