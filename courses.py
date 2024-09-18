@@ -63,6 +63,13 @@ def get(course_id):
     """
     multiple_choices = db_execute(sql, {"course_id": course_id}).fetchall()
     
+    sql = """
+        SELECT id, question
+        FROM free_responses
+        WHERE course_id=:course_id
+    """
+    free_responses = db_execute(sql, {"course_id": course_id}).fetchall()
+
     return {
         "id": course[0],
         "name": course[1],
@@ -78,7 +85,10 @@ def get(course_id):
             "type": "multiple_choice",
             "question": x.question,
             "choices": x.choices.split(";")
-        }, multiple_choices))
+        }, multiple_choices)) + list(map(lambda x: {
+            "type": "free_response",
+            "question": x.question
+        }, free_responses))
     }
 
 def add_material(course_id, content):
@@ -113,6 +123,27 @@ def add_multiple_choice(course_id, question, choices, correct_choices):
             "choices": ';'.join(choices),
             "correct_choices": ';'.join(correct_choices)}
         )
+        db_commit()
+    except:
+        return False
+    
+    return True
+
+def add_free_response(course_id, question, solution_regex, case_insensitive):
+    try:
+        sql = """
+            INSERT INTO free_responses (
+                course_id, question, solution_regex, case_insensitive
+            ) VALUES (
+                :course_id, :question, :solution_regex, :case_insensitive
+            )
+        """
+        db_execute(sql, {
+            "course_id": course_id,
+            "question": question,
+            "solution_regex": "^(" + solution_regex + ")$",
+            "case_insensitive": case_insensitive
+        })
         db_commit()
     except:
         return False

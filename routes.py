@@ -88,3 +88,12 @@ def add_multiple_choice(id):
     courses.add_multiple_choice(id, question, choices, correct_choices)
 
     return redirect("/courses/" + id)
+
+@app.route("/courses/<id>/add_free_response", methods=["POST"])
+def add_free_response(id):
+    question = request.form["question"]
+    solution_regex = request.form["solution_regex"]
+    case_insensitive = "case_insensitive" in request.form
+
+    courses.add_free_response(id, question, solution_regex, case_insensitive)
+    return redirect("/courses/" + id)

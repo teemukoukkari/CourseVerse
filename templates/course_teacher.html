@@ -13,6 +13,9 @@
         {% for choice in content.choices %}
             <input type="checkbox"/>{{choice}}
         {% endfor %}
+    {% elif content.type == "free_response" %}
+        {{content.question}}<br/>
+        <input type="text"/>
     {% endif %}
 </div>
 {% endfor %}
@@ -25,7 +28,7 @@
      </textarea><br/>
     <button type="submit">Create</button>
 </form>
-<h3>Create multiple choice</h3>
+<h3>Create multiple choice question</h3>
 <form action="add_multiple_choice" method="POST" id="multiple_choise_form">
     Question: <input type="text" name="question"/><br>
     Choices:
@@ -65,4 +68,33 @@
         }
     </script>
 </div>
+<h3>Create free-reponse question</h3>
+<form action="add_free_response" method="POST">
+    Question:
+        <input type="text" name="question"/><br/>
+    Solution pattern (regex):
+        <input type="text" name="solution_regex" id="solution_regex" onkeyup="regex_test(this.value)"/>
+        <input type="checkbox" name="case_insensitive" id="case_insensitive" onchange="regex_test(this.value)"/> case insensitive<br/>
+
+    Test pattern with input:
+        <input type="text" id="regex_test_string" onkeyup="regex_test(this.value)"/>
+        <span id="regex_test_result"></span><br/>
+
+    <button type="submit">Create</button>
+    </form>
+
+<script>
+    function regex_test() {
+        var solution_regex = document.getElementById("solution_regex").value;
+        var regex_test_string = document.getElementById("regex_test_string").value;
+        var case_insensitive = document.getElementById("case_insensitive");
+
+        var flags = case_insensitive.checked ? "i" : "";
+        var regexp = new RegExp("^(" + solution_regex + ")$", flags);
+        var result = regex_test_string.match(regexp);
+
+        document.getElementById("regex_test_result").innerHTML 
+            = result ? "correct" : "incorrect";
+    }
+</script>
 {% endblock %}

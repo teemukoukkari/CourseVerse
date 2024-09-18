@@ -25,3 +25,11 @@ CREATE TABLE multiple_choices (
     choices TEXT,
     correct_choices TEXT
 );
+
+CREATE TABLE free_responses (
+    id SERIAL PRIMARY KEY,
+    course_id INTEGER REFERENCES courses NOT NULL,
+    question TEXT,
+    solution_regex TEXT,
+    case_insensitive BOOLEAN
+);
