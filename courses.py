@@ -45,6 +45,7 @@ def get(course_id):
             CC.id as id,
             CC.position as position,
             CC.type as type,
+            CM.title AS m_title,
             CM.content AS m_content,
             MC.question AS mcq_question,
             MC.choices AS mcq_choices,
@@ -61,28 +62,25 @@ def get(course_id):
     contents = db_execute(sql, {"id": course_id}).fetchall()
 
     def map_content(x):
-        if x.type == "material": return {
+        common = {
             "id": x.id,
             "position": x.position,
-            "type": x.type,
-            "text": x.m_content
+            "type": x.type
         }
-        elif x.type == "multiple_choice": return {
-            "id": x.id,
-            "position": x.position,
-            "type": x.type,
+        if x.type == "material": return dict(common, **{
+            "title": x.m_title,
+            "text": x.m_content
+        })
+        elif x.type == "multiple_choice": return dict(common, **{
             "question": x.mcq_question,
             "choices": x.mcq_choices.split(";"),
             "correct_choices": x.mcq_correct_choices.split(";")
-        }
-        elif x.type == "free_response": return {
-            "id": x.id,
-            "position": x.position,
-            "type": x.type,
+        })
+        elif x.type == "free_response": return dict(common, **{
             "question": x.frq_question,
             "solution_regex": x.frq_solution_regex,
             "case_insensitive": x.frq_case_insensitive
-        }
+        })
         
     return {
         "id": course[0],
@@ -127,15 +125,15 @@ def add_content(course_id, content_type, content_id):
 
     return db_commit(sql, params)
 
-def add_material(course_id, content):
+def add_material(course_id, title, content):
     sql = """
         INSERT INTO course_materials (
-            content
+            title, content
         ) VALUES (
-            :content
+            :title, :content
         ) RETURNING id
     """
-    res = db_execute(sql, {"content": content})
+    res = db_execute(sql, {"title": title, "content": content})
 
     if res == None:
         return False

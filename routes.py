@@ -62,8 +62,9 @@ def get_course(id):
 
 @app.route("/courses/<id>/add_material", methods=["POST"])
 def add_material(id):
+    title = request.form["title"]
     content = request.form["content"]
-    courses.add_material(id, content)
+    courses.add_material(id, title, content)
     return redirect("/courses/" + id)
 
 @app.route("/courses/<id>/add_multiple_choice", methods=["POST"])

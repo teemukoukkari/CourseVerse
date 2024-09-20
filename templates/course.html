@@ -14,17 +14,19 @@
             <form action="/submit" method="POST">
                 <input type="hidden" name="content_id" value="{{content.id}}"/>
                 {% if content.type == "material" %}
+                <strong>{{content.position}}. {{content.title}}</strong><br/>
                     {{content.text}}
                     <button type="submit" name="status" value="1">Submit &#128077;</button>
                     <button type="submit" name="status" value="0">Submit &#128078;</button>
                 {% elif content.type == "multiple_choice" %}
-                    {{content.question}}
+                    <strong>{{content.position}}. {{content.question}}</strong>
                     {% for choice in content.choices %}
-                        <input type="checkbox" name="choice_{{choice}}"/>{{choice}}
+                        <input type="checkbox" name="choice_{{choice}}"/>
+                        {{choice}}
                     {% endfor %}
                     <button type="submit">Submit</button>
                 {% elif content.type == "free_response" %}
-                    {{content.question}}<br/>
+                    <strong>{{content.position}}. {{content.question}}<br/></strong>
                     <input type="text" name="answer"/>
                     <button type="submit">Submit</button>
                 {% endif %}
@@ -33,9 +35,10 @@
         {% elif user.role == "teacher" %}
         <div style="border:1px solid black; margin:3px;">
             {% if content.type == "material" %}
+                <strong>{{content.position}}. {{content.title}}</strong><br/>
                 {{content.text}}
             {% elif content.type == "multiple_choice" %}
-                {{content.question}}
+                <strong>{{content.position}}. {{content.question}}</strong><br/>
                 {% for choice in content.choices %}
                     <input
                         type="checkbox"
@@ -46,7 +49,7 @@
                     {{choice}}
                 {% endfor %}
             {% elif content.type == "free_response" %}
-                {{content.question}}<br/>
+            <strong>{{content.position}}. {{content.question}}</strong><br/>
                 <input type="text" name="answer"/>
             {% endif %}
             <form action="move_content" method="POST">
@@ -69,6 +72,7 @@
         <div>
             <h3>Text material</h3>
             <form action="add_material" method="POST">
+                Title: <input type="text" name="title"/><br>
                 Content:<br/>
                 <textarea type="text" name="content"></textarea><br/>
                 <button type="submit">Create</button>

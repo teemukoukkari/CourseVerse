@@ -14,6 +14,7 @@ CREATE TABLE courses (
 
 CREATE TABLE course_materials (
     id SERIAL PRIMARY KEY,
+    title TEXT,
     content TEXT
 );
 
