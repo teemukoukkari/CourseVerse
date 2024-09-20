@@ -57,11 +57,8 @@ def create_course():
 @app.route("/courses/<id>/")
 def get_course(id):
     course = courses.get(id)
-
     user = users.get()
-    if (user["role"] == "teacher"):
-        return render_template("course_teacher.html", user=user, course=course)
-    return "TODO"
+    return render_template("course.html", user=user, course=course)
 
 @app.route("/courses/<id>/add_material", methods=["POST"])
 def add_material(id):
