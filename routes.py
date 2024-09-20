@@ -75,9 +75,9 @@ def add_multiple_choice(id):
         if "answer_" + str(i) in request.form:
             if "correct_" + str(i) in request.form:
                 choices.append(request.form["answer_" + str(i)])
+                correct_choices.append(request.form["answer_" + str(i)])
             else:
                 choices.append(request.form["answer_" + str(i)])
-                correct_choices.append(request.form["answer_" + str(i)])
         else:
             break
 
