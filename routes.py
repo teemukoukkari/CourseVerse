@@ -107,6 +107,14 @@ def enroll(id):
 
     return redirect("/courses/" + id)    
 
+@app.route("/courses/<id>/move_content", methods=["POST"])
+def move_content(id):
+    old_position = int(request.form["position"])
+    action = request.form["action"]
+    if not courses.move_content(id, old_position, action):
+        return "Failed to move content", 400
+    return redirect("/courses/" + id) 
+
 @app.route("/submit", methods=["POST"])
 def submit():
     user = users.get()

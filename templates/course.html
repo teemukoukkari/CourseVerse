@@ -9,6 +9,7 @@
 <div>
     <h2>Content</h2>
     {% for content in course.contents %}
+        {% if user.role == "student" %}
         <div style="border:1px solid black; margin:3px;">
             <form action="/submit" method="POST">
                 <input type="hidden" name="content_id" value="{{content.id}}"/>
@@ -29,6 +30,35 @@
                 {% endif %}
             </form>
         </div>
+        {% elif user.role == "teacher" %}
+        <div style="border:1px solid black; margin:3px;">
+            {% if content.type == "material" %}
+                {{content.text}}
+            {% elif content.type == "multiple_choice" %}
+                {{content.question}}
+                {% for choice in content.choices %}
+                    <input
+                        type="checkbox"
+                        name="choice_{{choice}}"
+                        {{'checked' if choice in content.correct_choices}}
+                        disabled
+                    /> 
+                    {{choice}}
+                {% endfor %}
+            {% elif content.type == "free_response" %}
+                {{content.question}}<br/>
+                <input type="text" name="answer"/>
+            {% endif %}
+            <form action="move_content" method="POST">
+                <input type="hidden" name="position" value="{{content.position}}"/>
+                Move: 
+                <button type="submit" name="action" value="top">top</button>
+                <button type="submit" name="action" value="up">up</button>
+                <button type="submit" name="action" value="down">down</button>
+                <button type="submit" name="action" value="bottom">bottom</button>
+            </form>
+        </div>
+        {% endif %}
     {% endfor %}
     <hr/>
 </div>

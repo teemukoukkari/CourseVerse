@@ -43,6 +43,7 @@ def get(course_id):
     sql = """
         SELECT
             CC.id as id,
+            CC.position as position,
             CC.type as type,
             CM.content AS m_content,
             MC.question AS mcq_question,
@@ -55,24 +56,28 @@ def get(course_id):
             LEFT JOIN course_materials CM ON CC.course_material_id=CM.id
             LEFT JOIN multiple_choices MC ON CC.multiple_choice_id=MC.id
             LEFT JOIN free_responses FR ON CC.free_response_id=FR.id
+        ORDER BY CC.position 
     """
     contents = db_execute(sql, {"id": course_id}).fetchall()
 
     def map_content(x):
         if x.type == "material": return {
             "id": x.id,
+            "position": x.position,
             "type": x.type,
             "text": x.m_content
         }
         elif x.type == "multiple_choice": return {
             "id": x.id,
+            "position": x.position,
             "type": x.type,
             "question": x.mcq_question,
             "choices": x.mcq_choices.split(";"),
-            "correct_choices": x.mcq_choices.split(";")
+            "correct_choices": x.mcq_correct_choices.split(";")
         }
         elif x.type == "free_response": return {
             "id": x.id,
+            "position": x.position,
             "type": x.type,
             "question": x.frq_question,
             "solution_regex": x.frq_solution_regex,
@@ -93,9 +98,23 @@ def get(course_id):
 def add_content(course_id, content_type, content_id):
     sql = """
         INSERT INTO course_contents (
-            course_id, type, course_material_id, multiple_choice_id, free_response_id
-        ) VALUES (
-            :course_id, :type, :course_material_id, :multiple_choice_id, :free_response_id
+            course_id,
+            position,
+            type,
+            course_material_id,
+            multiple_choice_id,
+            free_response_id
+        ) VALUES(
+            :course_id,
+            (
+                SELECT COALESCE(MAX(position),0) + 1
+                FROM course_contents
+                WHERE course_id=:course_id
+            ),
+            :type,
+            :course_material_id,
+            :multiple_choice_id,
+            :free_response_id
         )
     """
     params = {
@@ -120,7 +139,7 @@ def add_material(course_id, content):
 
     if res == None:
         return False
-    return db_commit(course_id, "material", res.fetchone().id)
+    return add_content(course_id, "material", res.fetchone().id)
 
 def add_multiple_choice(course_id, question, choices, correct_choices):
     sql = """
@@ -173,3 +192,69 @@ def enroll(course_id, student_id):
         "course_id": course_id
     }
     return db_commit(sql, params)
+
+def move_content(course_id, old_position, action):
+    sql_top = """
+        UPDATE course_contents
+        SET position = (CASE
+            WHEN position=:old_position THEN 1 
+            ELSE position + 1
+        END)
+        WHERE course_id=:course_id AND position<=:old_position
+    """
+
+    sql_up = """
+        UPDATE course_contents
+        SET position = (CASE
+            WHEN position=:old_position-1 THEN :old_position
+            WHEN position=:old_position AND position!=0 THEN :old_position-1
+            ELSE :old_position
+        END)
+        WHERE course_id=:course_id
+            AND position IN(:old_position, :old_position-1)
+    """
+
+    sql_down = """
+        UPDATE course_contents
+        SET position = (CASE
+            WHEN position=:old_position+1 THEN :old_position
+            WHEN position=:old_position AND position!=(
+                SELECT MAX(position)
+                FROM course_contents
+                WHERE course_id=:course_id
+            ) THEN position+1
+            ELSE :old_position
+        END)
+        WHERE course_id=:course_id 
+            AND position IN(:old_position, :old_position+1)
+    """
+
+    sql_bottom = """
+        UPDATE course_contents
+        SET position = (CASE
+            WHEN position=:old_position
+            THEN (
+                SELECT MAX(position)
+                FROM course_contents
+                WHERE course_id=:course_id
+            )
+            ELSE position - 1
+        END)
+        WHERE course_id=:course_id AND position>=:old_position
+    """
+    
+    params = {
+        "course_id": course_id,
+        "old_position": old_position
+    }
+
+    if action == "top":
+        return db_commit(sql_top, params)
+    elif action == "up":
+        return db_commit(sql_up, params)
+    elif action == "down":
+        return db_commit(sql_down, params)
+    elif action == "bottom":
+        return db_commit(sql_bottom, params)
+
+    return False
