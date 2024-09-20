@@ -28,24 +28,20 @@ def login(username, password):
     return False
 
 def register(username, password, role):
-    password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
-    try:
-        sql = """
-            INSERT INTO users (
-                username, password, role
-            ) VALUES(
-                :username,:password,:role
-            )
-        """
-        db_execute(sql, {
-            "username": username,
-            "password": password_hash,
-            "role": role
-        })
-        db_commit()
-    except Exception as error:
+    sql = """
+        INSERT INTO users (
+            username, password, role
+        ) VALUES(
+            :username,:password,:role
+        )
+    """
+    params = {
+        "username": username,
+        "password": bcrypt.generate_password_hash(password).decode('utf-8'),
+        "role": role
+    }
+    if not db_commit(sql, params)
         return False
-    
     return login(username, password)
 
 def logout():

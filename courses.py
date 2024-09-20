@@ -1,5 +1,5 @@
 import users
-from db import db_execute, db_commit
+from db import db_execute, db_commit, db_execute_commit
 
 def get_list():
     sql = """
@@ -18,24 +18,19 @@ def get_list():
     }, courses))
 
 def create(name, description, teacher_id):
-    try:
-        sql = """
-            INSERT INTO courses (
-                name, description, teacher_id
-            ) VALUES(
-                :name, :description, :teacher_id
-            )
-        """
-        db_execute(sql, {
-            "name": name,
-            "description": description,
-            "teacher_id": teacher_id
-        })
-        db_commit()
-    except:
-        return False
-    
-    return True
+    sql = """
+        INSERT INTO courses (
+            name, description, teacher_id
+        ) VALUES(
+            :name, :description, :teacher_id
+        )
+    """
+    params = {
+        "name": name,
+        "description": description,
+        "teacher_id": teacher_id
+    }
+    return db_commit(sql, params)
 
 def get(course_id):
     sql = """
@@ -96,105 +91,85 @@ def get(course_id):
     }
 
 def add_content(course_id, content_type, content_id):
-    try:
-        sql = """
-            INSERT INTO course_contents (
-                course_id, type, course_material_id, multiple_choice_id, free_response_id
-            ) VALUES (
-                :course_id, :type, :course_material_id, :multiple_choice_id, :free_response_id
-            )
-        """
-        db_execute(sql, {
-            "course_id": course_id,
-            "type": content_type,
-            "course_material_id": content_id if content_type == "material" else None,
-            "multiple_choice_id": content_id if content_type == "multiple_choice" else None,
-            "free_response_id": content_id if content_type == "free_response" else None
-        })
-        db_commit()
-    except Exception as err:
-        print(err)
-        return False
-    
-    return True
+    sql = """
+        INSERT INTO course_contents (
+            course_id, type, course_material_id, multiple_choice_id, free_response_id
+        ) VALUES (
+            :course_id, :type, :course_material_id, :multiple_choice_id, :free_response_id
+        )
+    """
+    params = {
+        "course_id": course_id,
+        "type": content_type,
+        "course_material_id": content_id if content_type == "material" else None,
+        "multiple_choice_id": content_id if content_type == "multiple_choice" else None,
+        "free_response_id": content_id if content_type == "free_response" else None
+    }
 
+    return db_commit(sql, params)
 
 def add_material(course_id, content):
-    try:
-        sql = """
-            INSERT INTO course_materials (
-                content
-            ) VALUES (
-                :content
-            ) RETURNING id
-        """
-        id = db_execute(sql, {"content": content}).fetchone().id
-        if not add_content(course_id, "material", id):
-            return False
-    except Exception as err:
-        print(err)
+    sql = """
+        INSERT INTO course_materials (
+            content
+        ) VALUES (
+            :content
+        ) RETURNING id
+    """
+    res = db_execute(sql, {"content": content})
+
+    if res == None:
         return False
-    
-    return True
+    return db_commit(course_id, "material", res.fetchone().id)
 
 def add_multiple_choice(course_id, question, choices, correct_choices):
-    try:
-        sql = """
-            INSERT INTO multiple_choices (
-                question, choices, correct_choices
-            ) VALUES (
-                :question, :choices, :correct_choices
-            ) RETURNING id
-        """
-        id = db_execute(sql, {
-            "question": question,
-            "choices": ";".join(choices),
-            "correct_choices": ";".join(correct_choices)
-        }).fetchone().id
-        if not add_content(course_id, "multiple_choice", id):
-            return False
-    except Exception as err:
-        print(err)
+    sql = """
+        INSERT INTO multiple_choices (
+            question, choices, correct_choices
+        ) VALUES (
+            :question, :choices, :correct_choices
+        ) RETURNING id
+    """
+    params = {
+        "question": question,
+        "choices": ";".join(choices),
+        "correct_choices": ";".join(correct_choices)
+    }
+    res = db_execute(sql, params)
+
+    if res == None:
         return False
-    
-    return True
+    return add_content(course_id, "multiple_choice", res.fetchone().id)
 
 def add_free_response(course_id, question, solution_regex, case_insensitive):
-    try:
-        sql = """
-            INSERT INTO free_responses (
-                question, solution_regex, case_insensitive
-            ) VALUES (
-                :question, :solution_regex, :case_insensitive
-            ) RETURNING id
-        """
-        id = db_execute(sql, {
-            "question": question,
-            "solution_regex": solution_regex,
-            "case_insensitive": case_insensitive
-        }).fetchone().id
-        if not add_content(course_id, "free_response", id):
-            return False
-    except:
+    sql = """
+        INSERT INTO free_responses (
+            question, solution_regex, case_insensitive
+        ) VALUES (
+            :question, :solution_regex, :case_insensitive
+        ) RETURNING id
+    """
+    params = {
+        "question": question,
+        "solution_regex": solution_regex,
+        "case_insensitive": case_insensitive
+    }
+    res = db_execute(sql, params)
+
+    if res == None:
         return False
-    
-    return True
+    return add_content(course_id, "free_response", res.fetchone().id):
 
 def enroll(course_id, student_id):
-    try:
-        sql = """
-            INSERT INTO enrollments (
-                student_id, course_id
-            ) VALUES (
-                :student_id, :course_id
-            )
-        """
-        db_execute(sql, {
-            "student_id": student_id,
-            "course_id": course_id
-        })
-        db_commit()
-    except:
-        return False
-    
-    return True
+    sql = """
+        INSERT INTO enrollments (
+            student_id, course_id
+        ) VALUES (
+            :student_id, :course_id
+        )
+    """
+    params = {
+        "student_id": student_id,
+        "course_id": course_id
+    }
+    return db_commit(sql, params)

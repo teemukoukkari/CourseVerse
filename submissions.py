@@ -23,25 +23,20 @@ def get_content_info(content_id):
     }
 
 def create_raw(student_id, content_id, answer, correct):
-    try:
-        sql = """
-            INSERT INTO submissions (
-                student_id, content_id, answer, correct, submit_time
-            ) VALUES (
-                :student_id, :content_id, :answer, :correct, NOW()
-            )
-        """
-        db_execute(sql, {
-            "student_id": student_id,
-            "content_id": content_id,
-            "answer": answer,
-            "correct": correct
-        })
-        db_commit()
-    except Exception as err:
-        print(err)
-        return False
-    return True
+    sql = """
+        INSERT INTO submissions (
+            student_id, content_id, answer, correct, submit_time
+        ) VALUES (
+            :student_id, :content_id, :answer, :correct, NOW()
+        )
+    """
+    params = {
+        "student_id": student_id,
+        "content_id": content_id,
+        "answer": answer,
+        "correct": correct
+    }
+    return db_commit(sql, params)
 
 
 def create_course_material(student_id, content_info, status):

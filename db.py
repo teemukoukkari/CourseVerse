@@ -9,8 +9,18 @@ db = SQLAlchemy(app)
 
 def db_execute(sql, args={}):
     global db
-    return db.session.execute(text(sql), args)
+    try:
+        return db.session.execute(text(sql), args)
+    except Exception as err:
+        print(err)
+        return None
 
-def db_commit():
+def db_commit(sql, args={}):
     global db
-    db.session.commit()
+    try:
+        db.session.execute(text(sql), args)
+        db.session.commit()
+        return True
+    except Exception as err:
+        print(err)
+        return False
