@@ -1,6 +1,6 @@
 from flask import request, render_template, session, redirect
 from app import app
-import users, courses
+import users, courses, submissions
 
 @app.route("/")
 def index():
@@ -100,9 +100,33 @@ def enroll(id):
     if (user["role"] != "student"):
         return "Only students can enroll to courses", 400
     
-    if not courses.enroll(user["id"], id):
+    if not courses.enroll(id, user["id"]):
         return "Failed to enroll to course", 400
 
     users.load_enrollments()
 
     return redirect("/courses/" + id)    
+
+@app.route("/submit", methods=["POST"])
+def submit():
+    user = users.get()
+    content_id = int(request.form["content_id"])
+    info = submissions.get_content_info(content_id)
+    
+    if info["type"] == "material":
+        status = request.form["status"]
+        if not submissions.create_course_material(user["id"], info, status):
+            return "Failed to create submission", 400
+    elif info["type"] == "multiple_choice":
+        choices = []
+        for field in request.form:
+            if field.startswith("choice_"):
+                choices.append(field[7:])
+        if not submissions.create_multiple_choice(user["id"], info, choices):
+            return "Failed to create submission", 400
+    elif info["type"] == "free_response":
+        answer = request.form["answer"]
+        if not submissions.create_free_response(user["id"], info, answer):
+            return "Failed to create submission", 400
+
+    return redirect("/courses/" + str(info["course_id"]))

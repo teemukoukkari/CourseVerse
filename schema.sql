@@ -45,3 +45,12 @@ CREATE TABLE enrollments (
     student_id INTEGER REFERENCES users NOT NULL,
     course_id INTEGER REFERENCES courses NOT NULL
 );
+
+CREATE TABLE submissions (
+    id SERIAL PRIMARY KEY,
+    student_id INTEGER REFERENCES users NOT NULL,
+    content_id INTEGER REFERENCES course_contents NOT NULL,
+    answer TEXT,
+    correct BOOLEAN,
+    submit_time TIMESTAMP
+);

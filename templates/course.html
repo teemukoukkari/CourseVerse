@@ -7,20 +7,27 @@
 </div>
 
 <div>
-    <h2>Contents</h2>
+    <h2>Content</h2>
     {% for content in course.contents %}
         <div style="border:1px solid black; margin:3px;">
-            {% if content.type == "material" %}
-                {{content.text}}
-            {% elif content.type == "multiple_choice" %}
-                {{content.question}}
-                {% for choice in content.choices %}
-                    <input type="checkbox"/>{{choice}}
-                {% endfor %}
-            {% elif content.type == "free_response" %}
-                {{content.question}}<br/>
-                <input type="text"/>
-            {% endif %}
+            <form action="/submit" method="POST">
+                <input type="hidden" name="content_id" value="{{content.id}}"/>
+                {% if content.type == "material" %}
+                    {{content.text}}
+                    <button type="submit" name="status" value="1">Submit &#128077;</button>
+                    <button type="submit" name="status" value="0">Submit &#128078;</button>
+                {% elif content.type == "multiple_choice" %}
+                    {{content.question}}
+                    {% for choice in content.choices %}
+                        <input type="checkbox" name="choice_{{choice}}"/>{{choice}}
+                    {% endfor %}
+                    <button type="submit">Submit</button>
+                {% elif content.type == "free_response" %}
+                    {{content.question}}<br/>
+                    <input type="text" name="answer"/>
+                    <button type="submit">Submit</button>
+                {% endif %}
+            </form>
         </div>
     {% endfor %}
     <hr/>

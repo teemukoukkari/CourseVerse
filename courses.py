@@ -180,7 +180,7 @@ def add_free_response(course_id, question, solution_regex, case_insensitive):
     
     return True
 
-def enroll(student_id, course_id):
+def enroll(course_id, student_id):
     try:
         sql = """
             INSERT INTO enrollments (
