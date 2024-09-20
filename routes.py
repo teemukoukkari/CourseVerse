@@ -23,7 +23,6 @@ def login():
 
     return redirect("/")
 
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if users.get():
@@ -49,15 +48,15 @@ def logout():
 def create_course():
     name = request.form["name"]
     description = request.form["description"]
+    teacher_id = users.get()["id"]
 
-    if not courses.create(name, description):
+    if not courses.create(name, description, teacher_id):
         return "Failed to create course.", 400
     return redirect("/")
 
 @app.route("/courses/<id>/")
 def get_course(id):
     course = courses.get(id)
-    print(course)
 
     user = users.get()
     if (user["role"] == "teacher"):
@@ -97,3 +96,16 @@ def add_free_response(id):
 
     courses.add_free_response(id, question, solution_regex, case_insensitive)
     return redirect("/courses/" + id)
+
+@app.route("/courses/<id>/enroll")
+def enroll(id):
+    user = users.get()
+    if (user["role"] != "student"):
+        return "Only students can enroll to courses", 400
+    
+    if not courses.enroll(user["id"], id):
+        return "Failed to enroll to course", 400
+
+    users.load_enrollments()
+
+    return redirect("/courses/" + id)    

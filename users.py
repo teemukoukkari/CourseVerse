@@ -22,6 +22,7 @@ def login(username, password):
         id, username, password_hash, role = user
         if bcrypt.check_password_hash(password_hash, password):
             session["user"] = { "id": id, "username": username, "role": role }
+            load_enrollments()
             return True
     
     return False
@@ -50,3 +51,18 @@ def register(username, password, role):
 def logout():
     if "user" in session:
         del session["user"]
+
+def load_enrollments():
+    if "user" in session and session["user"]["role"] == "student":
+        sql = """
+            SELECT course_id
+            FROM enrollments
+            WHERE student_id=:student_id
+        """
+        session["user"]["enrollments"] = list(map(
+            lambda x: x.course_id,
+            db_execute(sql, {"student_id": session["user"]["id"]}).fetchall()
+        ))
+        return True
+    else:
+        return False

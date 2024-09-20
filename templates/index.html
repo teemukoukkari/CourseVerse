@@ -16,6 +16,8 @@
             <th>Teacher</th>
             <th>Actions</th>
         </tr>
+    </thead>
+    <tbody>
         {% for course in courses %}
             <tr>
                 <td>{{course.name}}</td>
@@ -23,12 +25,22 @@
                 <td>
                     {% if user.role == "teacher" %}
                         <a href="/courses/{{course.id}}">
-                            <button>View</button>
+                            <button>Manage</button>
                         </a>
+                    {% elif user.role == "student" %}
+                        {% if course.id in user.enrollments %}
+                            <a href="/courses/{{course.id}}/">
+                                <button>View</button>
+                            </a>
+                        {% else %}
+                            <a href="/courses/{{course.id}}/enroll">
+                                <button>Enroll</button>
+                            </a>
+                        {% endif %}
                     {% endif %}
                 </td>
             </tr>
         {% endfor %}
-    </thead>
+    </tbody>
 </table>
 {% endblock %}

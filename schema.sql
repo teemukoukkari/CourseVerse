@@ -33,3 +33,9 @@ CREATE TABLE free_responses (
     solution_regex TEXT,
     case_insensitive BOOLEAN
 );
+
+CREATE TABLE enrollments (
+    id SERIAL PRIMARY KEY,
+    student_id INTEGER REFERENCES users NOT NULL,
+    course_id INTEGER REFERENCES courses NOT NULL
+);

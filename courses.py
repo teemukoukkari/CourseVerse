@@ -17,11 +17,7 @@ def get_list():
         }
     }, courses))
 
-def create(name, description):
-    user = users.get()
-    if not user or user["role"] != "teacher":
-        return False
-    
+def create(name, description, teacher_id):
     try:
         sql = """
             INSERT INTO courses (
@@ -33,7 +29,7 @@ def create(name, description):
         db_execute(sql, {
             "name": name,
             "description": description,
-            "teacher_id": user["id"]
+            "teacher_id": teacher_id
         })
         db_commit()
     except:
@@ -143,6 +139,25 @@ def add_free_response(course_id, question, solution_regex, case_insensitive):
             "question": question,
             "solution_regex": "^(" + solution_regex + ")$",
             "case_insensitive": case_insensitive
+        })
+        db_commit()
+    except:
+        return False
+    
+    return True
+
+def enroll(student_id, course_id):
+    try:
+        sql = """
+            INSERT INTO enrollments (
+                student_id, course_id
+            ) VALUES (
+                :student_id, :course_id
+            )
+        """
+        db_execute(sql, {
+            "student_id": student_id,
+            "course_id": course_id
         })
         db_commit()
     except:
