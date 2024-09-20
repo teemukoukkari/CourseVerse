@@ -14,13 +14,11 @@ CREATE TABLE courses (
 
 CREATE TABLE course_materials (
     id SERIAL PRIMARY KEY,
-    course_id INTEGER REFERENCES courses NOT NULL,
     content TEXT
 );
 
 CREATE TABLE multiple_choices (
     id SERIAL PRIMARY KEY,
-    course_id INTEGER REFERENCES courses NOT NULL,
     question TEXT,
     choices TEXT,
     correct_choices TEXT
@@ -28,10 +26,18 @@ CREATE TABLE multiple_choices (
 
 CREATE TABLE free_responses (
     id SERIAL PRIMARY KEY,
-    course_id INTEGER REFERENCES courses NOT NULL,
     question TEXT,
     solution_regex TEXT,
     case_insensitive BOOLEAN
+);
+
+CREATE TABLE course_contents (
+    id SERIAL PRIMARY KEY,
+    course_id INTEGER REFERENCES courses NOT NULL,
+    type TEXT,
+    course_material_id INTEGER REFERENCES course_materials,
+    multiple_choice_id INTEGER REFERENCES multiple_choices,
+    free_response_id INTEGER REFERENCES free_responses
 );
 
 CREATE TABLE enrollments (
