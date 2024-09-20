@@ -1,5 +1,5 @@
 import users
-from db import db_execute, db_commit, db_execute_commit
+from db import db_execute, db_commit
 
 def get_list():
     sql = """
@@ -158,7 +158,7 @@ def add_free_response(course_id, question, solution_regex, case_insensitive):
 
     if res == None:
         return False
-    return add_content(course_id, "free_response", res.fetchone().id):
+    return add_content(course_id, "free_response", res.fetchone().id)
 
 def enroll(course_id, student_id):
     sql = """

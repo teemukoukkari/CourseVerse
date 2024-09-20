@@ -40,7 +40,7 @@ def register(username, password, role):
         "password": bcrypt.generate_password_hash(password).decode('utf-8'),
         "role": role
     }
-    if not db_commit(sql, params)
+    if not db_commit(sql, params):
         return False
     return login(username, password)
 

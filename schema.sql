@@ -34,6 +34,7 @@ CREATE TABLE free_responses (
 CREATE TABLE course_contents (
     id SERIAL PRIMARY KEY,
     course_id INTEGER REFERENCES courses NOT NULL,
+    position INTEGER,
     type TEXT,
     course_material_id INTEGER REFERENCES course_materials,
     multiple_choice_id INTEGER REFERENCES multiple_choices,
