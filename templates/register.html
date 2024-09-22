@@ -11,4 +11,5 @@
     </select><br>
     <button type="submit">Register</button>
 </form>
+{% if error_msg %}<p style="color:red;">{{error_msg}}</p>{% endif %}
 {% endblock %}

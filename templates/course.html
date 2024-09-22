@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <div>
+    {% if error_msg %}<p style="color:red;">{{error_msg}}</p>{% endif %}
     <h2>{{course.name}}</h2>
     <p>{{course.description}}</p>
     <hr/>
@@ -25,6 +26,7 @@
             {% endif %}
         {% endfor %}
     {% endif %}
+    <hr/>
 </div>
 
 <div>

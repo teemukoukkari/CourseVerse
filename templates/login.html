@@ -6,4 +6,5 @@
     password: <input type="password" name="password"/><br>
     <button type="submit">Login</button>
 </form>
+{% if error_msg %}<p style="color:red;">{{error_msg}}</p>{% endif %}
 {% endblock %}

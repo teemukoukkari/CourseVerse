@@ -55,10 +55,13 @@ def load_enrollments():
             FROM enrollments
             WHERE student_id=:student_id
         """
-        session["user"]["enrollments"] = list(map(
-            lambda x: x.course_id,
-            db_execute(sql, {"student_id": session["user"]["id"]}).fetchall()
-        ))
+        result = db_execute(sql, {
+            "student_id": session["user"]["id"]}
+        ).fetchall()
+
+        session["user"] = dict(session["user"], **{
+            "enrollments": list(map(lambda x: x.course_id, result))
+        })
         return True
     else:
         return False

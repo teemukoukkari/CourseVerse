@@ -39,6 +39,8 @@ def get(course_id):
         WHERE C.id=:course_id AND C.teacher_id=U.id
     """
     course = db_execute(sql, {"course_id": course_id}).fetchone()
+    if course is None:
+        return None
 
     sql = """
         SELECT

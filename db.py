@@ -12,6 +12,7 @@ def db_execute(sql, args={}):
     try:
         return db.session.execute(text(sql), args)
     except Exception as err:
+        db.session.rollback()
         print(err)
         return None
 
@@ -22,5 +23,6 @@ def db_commit(sql, args={}):
         db.session.commit()
         return True
     except Exception as err:
+        db.session.rollback()
         print(err)
         return False

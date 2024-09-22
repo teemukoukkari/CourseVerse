@@ -15,6 +15,9 @@ def get_content_info(content_id):
         WHERE id=:content_id
     """
     result = db_execute(sql, {"content_id": content_id}).fetchone()
+    if not result:
+        return None
+    
     return {
         "id": content_id,
         "course_id": result.course_id,
@@ -48,10 +51,11 @@ def create_multiple_choice(student_id, content_info, choices):
         FROM multiple_choices
         WHERE id=:id
     """
-    correct_choices = db_execute(sql, {
-        "id": content_info["target_id"]
-    }).fetchone().correct_choices.split(";")
-
+    result = db_execute(sql, {"id": content_info["target_id"]}).fetchone()
+    if not result:
+        return False
+    
+    correct_choices = result.correct_choices.split(";")
     correct = set(choices) == set(correct_choices)
     return create_raw(student_id, content_info["id"], ";".join(choices), correct)
 
@@ -61,9 +65,9 @@ def create_free_response(student_id, content_info, answer):
         FROM free_responses
         WHERE id=:id
     """
-    result = db_execute(sql, {
-        "id": content_info["target_id"]
-    }).fetchone()
+    result = db_execute(sql, { "id": content_info["target_id"]}).fetchone()
+    if not result:
+        return False
 
     expr = "^(" + result.solution_regex + ")$"
     flags = re.IGNORECASE if result.case_insensitive else None
