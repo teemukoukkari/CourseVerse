@@ -12,20 +12,25 @@ Sovelluksen ominaisuuksia:
 - [x] Opettaja pystyy vaihtamaan lisätyn materiaalin ja tehtävien järjestystä kurssisivulla
 - [ ] Opettaja pystyy näkemään kurssistaan tilaston, keitä opiskelijoita on kurssilla ja mitkä kurssin tehtävät kukin on ratkonut.
 
-## Sovelluksen testaaminen (Docker)
-Mikäli olet käyttänyt Dockeria aikaisemmin ja se on asennettuna, tämä lienee vaivattomin tapa saada sovellus käyntiin.
+## Sovelluksen testaaminen
+Sovellus on hostattuna osoitteessa [https://courseverse-w2hm.onrender.com/courses](https://courseverse-w2hm.onrender.com/courses). Kyseessä on ilmainen tilaus, joten on yleistä, että sivun ensimmäinen lataus voi kestää yli minuutin. Tämän jälkeen sivu toimii kuitenkin yleensä hyvin.
 
-Kloonaa repo, siirry sen juurihakemistoon ja käynnistä sovellus porttiin 8080 komennolla
+<details>
+<summary>Sovelluksen testaaminen (Docker)/summary>
+Mikäli olet käyttänyt Dockeria aikaisemmin ja se on asennettuna, tämä lienee vaivattomin tapa saada sovellus käyntiin omalla koneella.
+
+Kloonaa repo, siirry sen juurihakemistoon ja käynnistä sovellus  porttiin 8080 komennolla
 ```
 $ docker dompose up
 ```
 
 Huomaa, että postgres-tunnukset ja secret_key ovat selväkielisenä .yml-tiedostossa - tämä on toistaiseksi vain testaamista varten.
+</details>
 
+<details>
+<summary>Sovelluksen testaaminen (Docker)/summary>
 ## Sovelluksen testaaminen (perinteinen)
-
 Vaihtoehtoisesti voit ottaa sovelluksen käyttöön kurssimateriaalissa esitetyllä tavalla. Edellytyksenä on, että postgres on asennettuna valmiiksi.
-
 
 Kloonaa tämä repositorio omalle koneellesi ja siirry sen juurikansioon. Luo kansioon .env-tiedosto ja määritä sen sisältö seuraavanlaiseksi:
 
@@ -46,7 +51,8 @@ Määritä vielä tietokannan skeema komennolla (varmista, että tietokanta on t
 $ psql < schema.sql
 ```
 
-Nyt voi tkäynnistää sovelluksen komennolla
+Nyt voit käynnistää sovelluksen komennolla
 ```
 $ flask run
 ```
+</details>
