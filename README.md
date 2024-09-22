@@ -16,19 +16,19 @@ Sovelluksen ominaisuuksia:
 Sovellus on hostattuna osoitteessa [https://courseverse-w2hm.onrender.com/courses](https://courseverse-w2hm.onrender.com/courses). Kyseessä on ilmainen tilaus, joten on yleistä, että sivun ensimmäinen lataus voi kestää yli minuutin. Tämän jälkeen sivu toimii kuitenkin yleensä hyvin.
 
 <details>
-<summary>Sovelluksen testaaminen (Docker)/summary>
-Mikäli olet käyttänyt Dockeria aikaisemmin ja se on asennettuna, tämä lienee vaivattomin tapa saada sovellus käyntiin omalla koneella.
+    <summary>Sovelluksen testaaminen (Docker)</summary>
+    Mikäli olet käyttänyt Dockeria aikaisemmin ja se on asennettuna, tämä lienee vaivattomin tapa saada sovellus käyntiin omalla koneella.
 
-Kloonaa repo, siirry sen juurihakemistoon ja käynnistä sovellus  porttiin 8080 komennolla
-```
-$ docker dompose up
-```
+    Kloonaa repo, siirry sen juurihakemistoon ja käynnistä sovellus  porttiin 8080 komennolla
+    ```
+    $ docker dompose up
+    ```
 
-Huomaa, että postgres-tunnukset ja secret_key ovat selväkielisenä .yml-tiedostossa - tämä on toistaiseksi vain testaamista varten.
+    Huomaa, että postgres-tunnukset ja secret_key ovat selväkielisenä .yml-tiedostossa - tämä on toistaiseksi vain testaamista varten.
 </details>
 
 <details>
-<summary>Sovelluksen testaaminen (Docker)/summary>
+<summary>Sovelluksen testaaminen (Docker)/<summary>
 ## Sovelluksen testaaminen (perinteinen)
 Vaihtoehtoisesti voit ottaa sovelluksen käyttöön kurssimateriaalissa esitetyllä tavalla. Edellytyksenä on, että postgres on asennettuna valmiiksi.
 
