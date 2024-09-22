@@ -36,9 +36,9 @@ def get(course_id):
     sql = """
         SELECT C.id, C.name, C.description, U.id, U.username
         FROM courses C, users U
-        WHERE C.id=:id AND C.teacher_id=U.id
+        WHERE C.id=:course_id AND C.teacher_id=U.id
     """
-    course = db_execute(sql, {"id": course_id}).fetchone()
+    course = db_execute(sql, {"course_id": course_id}).fetchone()
 
     sql = """
         SELECT
@@ -57,9 +57,10 @@ def get(course_id):
             LEFT JOIN course_materials CM ON CC.course_material_id=CM.id
             LEFT JOIN multiple_choices MC ON CC.multiple_choice_id=MC.id
             LEFT JOIN free_responses FR ON CC.free_response_id=FR.id
+        WHERE CC.course_id=:course_id
         ORDER BY CC.position 
     """
-    contents = db_execute(sql, {"id": course_id}).fetchall()
+    contents = db_execute(sql, {"course_id": course_id}).fetchall()
 
     def map_content(x):
         common = {
