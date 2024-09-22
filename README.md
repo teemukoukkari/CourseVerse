@@ -11,3 +11,7 @@ Sovelluksen ominaisuuksia:
 - [x] Opettaja pystyy lisäämään kurssisivulle tekstimateriaalia, monivalintatehtäviä ja automaattisesti tarkastettavia tekstivastauksia.
 - [x] Opettaja pystyy vaihtamaan lisätyn materiaalin ja tehtävien järjestystä kurssisivulla
 - [ ] Opettaja pystyy näkemään kurssistaan tilaston, keitä opiskelijoita on kurssilla ja mitkä kurssin tehtävät kukin on ratkonut.
+
+## Testaaminen
+Tavat testata sovellusta käytännössä:
+1) Hostaan 
