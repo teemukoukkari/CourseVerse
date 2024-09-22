@@ -69,3 +69,23 @@ def create_free_response(student_id, content_info, answer):
     flags = re.IGNORECASE if result.case_insensitive else None
     correct = bool(re.match(expr, answer, flags))
     return create_raw(student_id, content_info["id"], answer, correct)
+
+def get_user_overview(student_id, course_id):
+    sql = """
+        SELECT CC.position, BOOL_OR(S.correct) AS status
+        FROM course_contents CC
+        LEFT JOIN submissions S ON S.content_id=CC.id AND S.student_id=:student_id
+        WHERE CC.course_id=:course_id
+        GROUP BY CC.position
+        ORDER BY CC.position
+    """
+    params = {
+        "student_id": student_id,
+        "course_id": course_id
+    }
+
+    result = db_execute(sql, params).fetchall()
+    return list(map(lambda x: { 
+        "position": x.position,
+        "status": x.status
+    }, result))

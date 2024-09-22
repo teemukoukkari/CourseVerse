@@ -7,10 +7,37 @@
 </div>
 
 <div>
+    <h2>Overview</h2>
+    {% if user.role == "student" %}
+        {% for task in overview %}
+            {% if task.status == True %}
+                <div style="width:40px;height:40px;background-color:lightgreen;display:inline-block;text-align:center;line-height:40px;">
+                    {{task.position}}
+                </div>
+            {% elif task.status == False %}
+                <div style="width:40px;height:40px;background:red;display:inline-block;text-align:center;line-height:40px;">
+                    {{task.position}}
+                </div>
+            {% else %}
+                <div style="width:40px;height:40px;background:gray;display:inline-block;text-align:center;line-height:40px;">
+                    {{task.position}}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>
+
+<div>
     <h2>Content</h2>
     {% for content in course.contents %}
         {% if user.role == "student" %}
-        <div style="border:1px solid black; margin:3px;">
+            {% if content.status == True %}
+            <div style="border:2px solid green; margin:3px;">
+            {% elif content.status == False %}
+            <div style="border:2px solid red; margin:3px;">
+            {% else %}
+            <div style="border:2px solid black; margin:3px;">
+            {% endif %}
             <form action="/submit" method="POST">
                 <input type="hidden" name="content_id" value="{{content.id}}"/>
                 {% if content.type == "material" %}

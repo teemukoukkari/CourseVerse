@@ -58,7 +58,17 @@ def create_course():
 def get_course(id):
     course = courses.get(id)
     user = users.get()
-    return render_template("course.html", user=user, course=course)
+    overview = None
+    if (user["role"] == "student"):
+        overview = submissions.get_user_overview(user["id"], id)
+        for i in range(0, len(course["contents"])):
+            course["contents"][i]["status"] = next(
+                task["status"] 
+                for task 
+                in overview
+                if task["position"] == course["contents"][i]["position"]
+            )
+    return render_template("course.html", user=user, course=course, overview=overview)
 
 @app.route("/courses/<id>/add_material", methods=["POST"])
 def add_material(id):
