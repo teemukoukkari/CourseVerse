@@ -7,13 +7,13 @@ Sovelluksen ominaisuuksia:
 - [x] Opiskelija näkee listan kursseista ja voi liittyä kurssille.
 - [x] Opiskelija voi lukea kurssin tekstimateriaalia sekä ratkoa kurssin tehtäviä.
 - [x] Opiskelija pystyy näkemään tilaston, mitkä kurssin tehtävät hän on ratkonut.
-- [ ] Opettaja pystyy luomaan uuden kurssin sekä muokkaamaan ja poistamaan kurssejaan
+- [x] Opettaja pystyy luomaan uuden kurssin sekä muokkaamaan ja poistamaan kurssejaan
 - [x] Opettaja pystyy lisäämään kurssisivulle tekstimateriaalia, monivalintatehtäviä ja automaattisesti tarkastettavia tekstivastauksia.
 - [x] Opettaja pystyy vaihtamaan lisätyn materiaalin ja tehtävien järjestystä kurssisivulla
-- [ ] Opettaja pystyy näkemään kurssistaan tilaston, keitä opiskelijoita on kurssilla ja mitkä kurssin tehtävät kukin on ratkonut.
+- [x] Opettaja pystyy näkemään kurssistaan tilaston, keitä opiskelijoita on kurssilla ja mitkä kurssin tehtävät kukin on ratkonut.
 
 ## Sovelluksen testaaminen
-Sovellus on hostattuna osoitteessa [https://courseverse-w2hm.onrender.com/courses](https://courseverse-w2hm.onrender.com/courses). Kyseessä on ilmainen tilaus, joten on yleistä, että sivun ensimmäinen lataus voi kestää yli minuutin. Tämän jälkeen sivu toimii kuitenkin yleensä hyvin.
+Sovellus on hostattuna osoitteessa [https://courseverse-w2hm.onrender.com/courses](https://courseverse-w2hm.onrender.com/courses). Siellä on myös esimerkkikurssi valmiiksi. Kyseessä on ilmainen tilaus, joten on yleistä, että sivun ensimmäinen lataus voi kestää yli minuutin. Tämän jälkeen sivu toimii kuitenkin yleensä hyvin.
 
 <details>
 <summary>Sovelluksen testaaminen (Docker)</summary>
