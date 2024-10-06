@@ -8,7 +8,7 @@ CREATE TABLE users (
 CREATE TABLE courses (
     id SERIAL PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
-    description TEXT,
+    description TEXT NOT NULL,
     teacher_id INTEGER REFERENCES users
 );
 

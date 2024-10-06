@@ -74,11 +74,11 @@ def create_course():
 
     error_msg = None
     name, description = form_get("name", "description")
-    if not name or description is None:
+    if not (name and description):
         error_msg = "Required fields are missing."
     elif not 4 <= len(name) <= 32:
         error_msg = "Course name must be between 4 and 32 characters long."
-    elif not len(description) <= 256:
+    elif not 1 <= len(description) <= 256:
         error_msg = "Course description can be at most 256 characters long."
     elif not courses.create(name, description, user["id"]):
         error_msg = "Failed to create course. Course name may be already taken."

@@ -1,47 +1,69 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Courses</h2>
-{% if user.role == "teacher" %}
-<form action="/courses" method="POST">
-    <strong>Create new:</strong>
-    name: <input type="text" name="name"/>
-    description: <input type="text" name="description"/>
-    <button type="submit">Create</button>
-</form>
-{% endif %}
-{% if error_msg %}<p style="color:red;">{{error_msg}}</p>{% endif %}
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Teacher</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for course in courses %}
+<div class="container mt-5">
+    <h2 class="text-center mb-3">List of Courses</h2>
+
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>{{course.name}}</td>
-                <td>{{course.teacher.username}}</td>
+                <th>Name</th>
+                <th class="w-50">Description</th>
+                <th>Teacher</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.name }}</td>
+                <td>{{ course.description }}</td>
+                <td>{{ course.teacher }}</td>
                 <td>
                     {% if user.role == "teacher" %}
-                        <a href="/courses/{{course.id}}">
-                            <button>Manage</button>
-                        </a>
+                    <a href="/courses/{{ course.id }}" class="btn btn-secondary">Manage</a>
+                    <a href="/courses/{{ course.id }}/" class="btn btn-danger">Delete</a>
                     {% elif user.role == "student" %}
                         {% if course.id in user.enrollments %}
-                            <a href="/courses/{{course.id}}/">
-                                <button>View</button>
-                            </a>
+                        <a href="/courses/{{ course.id }}/" class="btn btn-info">View</a>
                         {% else %}
-                            <a href="/courses/{{course.id}}/enroll">
-                                <button>Enroll</button>
-                            </a>
+                        <a href="/courses/{{ course.id }}/enroll" class="btn btn-success">Enroll</a>
                         {% endif %}
                     {% endif %}
                 </td>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+            {% endfor %}
+
+            {% if user.role == "teacher" %}
+            <tr>
+                <form action="/courses" method="POST">
+                    <td>
+                        <input type="text" name="name" class="w-100"/>
+                    </td>
+                    <td>
+                        <textarea 
+                            name="description"
+                            style="width: 100%; resize: none; overflow: hidden;"
+                            oninput="desc_input(this)"
+                        ></textarea>
+                        <script>
+                            function desc_input(t) {
+                                t.style.height = "auto";
+                                t.style.height = (t.scrollHeight) + "px";
+                            }
+                        </script>
+                    </td>
+                    <td>
+                        {{ user.username }}
+                    </td>
+                    <td>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </td>
+                </form>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    {% include 'error_box.html' %}
+</div>
 {% endblock %}

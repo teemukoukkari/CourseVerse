@@ -1,0 +1,11 @@
+{% if error_msg %}
+    <div id="error_box" class="alert alert-danger">
+        <span class="text-left">ERROR: {{ error_msg }}</span>
+    </div>
+    <script>
+        function hide_error_box() {
+            document.getElementById("error_box").style.display = "none";
+        }
+        setTimeout(hide_error_box, 5000)
+    </script>
+{% endif %}

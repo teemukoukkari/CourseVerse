@@ -3,18 +3,20 @@ from db import db_execute, db_commit
 
 def get_list():
     sql = """
-        SELECT C.id, C.name, U.id, U.username
+        SELECT
+            C.id AS id,
+            C.name AS name,
+            C.description AS description,
+            U.username AS teacher
         FROM courses C, users U
         WHERE C.teacher_id=U.id
     """
     courses = db_execute(sql).fetchall()
-    return list(map(lambda course: {
-        "id": course[0],
-        "name": course[1],
-        "teacher": { 
-            "id": course[2],
-            "username": course[3]
-        }
+    return list(map(lambda x: {
+        "id": x.id,
+        "name": x.name,
+        "description": x.description,
+        "teacher": x.teacher
     }, courses))
 
 def create(name, description, teacher_id):
