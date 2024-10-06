@@ -34,6 +34,16 @@ def create(name, description, teacher_id):
     }
     return db_commit(sql, params)
 
+def delete(course_id):
+    sql = """
+        DELETE FROM courses
+        WHERE id=:course_id
+    """
+    params = {
+        "course_id": course_id
+    }
+    return db_commit(sql, params)
+
 def get(course_id):
     sql = """
         SELECT C.id, C.name, C.description, U.id, U.username

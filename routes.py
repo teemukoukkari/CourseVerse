@@ -88,6 +88,15 @@ def create_course():
         "courses.html", user=user, courses=course_list, error_msg=error_msg
     )
 
+@app.route("/courses/<id>/delete")
+def delete_course(id):
+    user = users.get()
+    if not (user and user["role"] == "teacher"):
+        return "You must be logged in as teacher to do this", 403
+    
+    courses.delete(id)
+    return redirect("/")
+
 @app.route("/courses/<id>/enroll")
 def enroll(id):
     user = users.get()
