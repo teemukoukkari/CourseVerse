@@ -74,7 +74,7 @@
                 <input
                     class="form-control"
                     type="text"
-                    name="question"
+                    name="solution_regex"
                     id="frq_solution_regex"
                     onkeyup="frq_regex_test()"
                     required
@@ -92,7 +92,7 @@
                     id="frq_test_string"
                     onkeyup="frq_regex_test()"
                 />
-                <button class="btn btn-primary w-100 mt-2" onClick="mcq_submit()">Create</button>
+                <button class="btn btn-primary w-100 mt-2">Create</button>
             </div>
             <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
         </form>
