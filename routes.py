@@ -202,6 +202,21 @@ def add_free_response(id):
     session["course_error_msg"] = error_msg
     return redirect("/courses/" + id)
 
+@app.route("/courses/<id>/delete_content", methods=["POST"])
+def delete_content(id):
+    user = users.get()
+    if not (user and user["role"] == "teacher"):
+        return "You must be logged in as teacher to do this", 403
+    
+    error_msg = None
+    content_id, position = form_get("content_id", "position")
+    if not (content_id and position):
+        error_msg = "Required fields are missing."
+    elif not courses.delete_content(id, content_id, position):
+        error_msg = "Failed to delete content."
+
+    session["course_error_msg"] = error_msg
+    return redirect("/courses/" + id) 
 
 @app.route("/courses/<id>/move_content", methods=["POST"])
 def move_content(id):

@@ -37,9 +37,9 @@ CREATE TABLE course_contents (
     course_id INTEGER REFERENCES courses NOT NULL,
     position INTEGER,
     type TEXT,
-    course_material_id INTEGER REFERENCES course_materials,
-    multiple_choice_id INTEGER REFERENCES multiple_choices,
-    free_response_id INTEGER REFERENCES free_responses
+    course_material_id INTEGER REFERENCES course_materials ON DELETE CASCADE,
+    multiple_choice_id INTEGER REFERENCES multiple_choices ON DELETE CASCADE,
+    free_response_id INTEGER REFERENCES free_responses ON DELETE CASCADE
 );
 
 CREATE TABLE enrollments (

@@ -194,6 +194,20 @@ def enroll(course_id, student_id):
     }
     return db_commit(sql, params)
 
+def delete_content(course_id, content_id, position):
+    if not move_content(course_id, position, "bottom"):
+        return False
+
+    sql = """
+        DELETE FROM course_contents
+        WHERE course_id=:course_id AND id=:content_id
+    """
+    params = {
+        "course_id": course_id,
+        "content_id": content_id
+    }
+    return db_commit(sql, params)
+
 def move_content(course_id, old_position, action):
     sql_top = """
         UPDATE course_contents
@@ -208,7 +222,7 @@ def move_content(course_id, old_position, action):
         UPDATE course_contents
         SET position = (CASE
             WHEN position=:old_position-1 THEN :old_position
-            WHEN position=:old_position AND position!=0 THEN :old_position-1
+            WHEN position=:old_position AND position!=1 THEN :old_position-1
             ELSE :old_position
         END)
         WHERE course_id=:course_id

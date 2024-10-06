@@ -79,7 +79,7 @@
                 {% endfor %}
             {% elif content.type == "free_response" %}
             <strong>{{content.position}}. {{content.question}}</strong><br/>
-                <input type="text" name="answer"/>
+                <input type="text" name="answer"/> (solution: '{{content.solution_regex}}')
             {% endif %}
             <form action="move_content" method="POST">
                 <input type="hidden" name="position" value="{{content.position}}"/>
@@ -88,6 +88,11 @@
                 <button type="submit" name="action" value="up">up</button>
                 <button type="submit" name="action" value="down">down</button>
                 <button type="submit" name="action" value="bottom">bottom</button>
+            </form>
+            <form action="delete_content" method="POST">
+                <input type="hidden" name="content_id" value="{{content.id}}"/>
+                <input type="hidden" name="position" value="{{content.position}}"/>
+                <button type="submit">Delete</button>
             </form>
         </div>
         {% endif %}
@@ -114,8 +119,8 @@
                 Choices:
             </form>
             <div>
-                <button onclick="mcq_add_new()">Add</button> 
-                <button onclick="mcq_remove_last()">Remove</button><br>
+                <button onclick="mcq_add_choise()">Add</button> 
+                <button onclick="mcq_remove_choice()">Remove</button><br>
                 <button onClick="mcq_submit()">Create</button>
             </div>
         </div>
