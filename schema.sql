@@ -34,7 +34,7 @@ CREATE TABLE free_responses (
 
 CREATE TABLE course_contents (
     id SERIAL PRIMARY KEY,
-    course_id INTEGER REFERENCES courses NOT NULL,
+    course_id INTEGER REFERENCES courses ON DELETE CASCADE NOT NULL,
     position INTEGER,
     type TEXT,
     course_material_id INTEGER REFERENCES course_materials ON DELETE CASCADE,
@@ -50,8 +50,8 @@ CREATE TABLE enrollments (
 
 CREATE TABLE submissions (
     id SERIAL PRIMARY KEY,
-    student_id INTEGER REFERENCES users NOT NULL,
-    content_id INTEGER REFERENCES course_contents NOT NULL,
+    student_id INTEGER REFERENCES users ON DELETE CASCADE NOT NULL,
+    content_id INTEGER REFERENCES course_contents ON DELETE CASCADE NOT NULL,
     answer TEXT,
     correct BOOLEAN,
     submit_time TIMESTAMP
