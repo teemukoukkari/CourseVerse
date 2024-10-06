@@ -39,9 +39,13 @@ function frq_regex_test() {
     const case_insentive = document.getElementById("frq_case_insensitive").checked;
     const test_string = document.getElementById("frq_test_string").value;
 
-    const expr = new RegExp("^(" + solution_regex + ")$", case_insentive ? "i" : "");
-    const result = test_string.match(expr);
-
-    document.getElementById("frq_test_result").innerHTML
-        = result ? "correct" : "incorrect";
+    try {
+        const expr = new RegExp("^(" + solution_regex + ")$", case_insentive ? "i" : "");
+        const result = test_string.match(expr);
+        document.getElementById("frq_test_result").innerHTML
+            = result ? "correct" : "incorrect";
+    } catch(e) {
+        document.getElementById("frq_test_result").innerHTML
+            = "invalid regex"
+    }
 }

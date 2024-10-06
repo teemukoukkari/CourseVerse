@@ -181,6 +181,11 @@ def add_multiple_choice(id):
     session["course_error_msg"] = error_msg
     return redirect("/courses/" + id)
 
+def check_regex(s):
+    try: re.compile(s)
+    except Exception: return False
+    return True 
+
 @app.route("/courses/<id>/add_free_response", methods=["POST"])
 def add_free_response(id):
     user = users.get()
@@ -192,9 +197,10 @@ def add_free_response(id):
     case = "case_insensitive" in request.form
     if not (question and solution_regex):
         error_msg = "Required fields are missing."
+    elif not check_regex("^(" + solution_regex + ")$"):
+        error_msg = "Invalid solution regex."
     elif not courses.add_free_response(id, question, solution_regex, case):
         error_msg = "Failed to create free reponse question."
-    # TODO: CHECK that regex is valid
 
     session["course_error_msg"] = error_msg
     return redirect("/courses/" + id)
