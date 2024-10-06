@@ -10,21 +10,46 @@
 <div>
     <h2>Overview</h2>
     {% if user.role == "student" %}
-        {% for task in overview %}
-            {% if task.status == True %}
+        {% for content in course.contents %}
+            {% if content.status == True %}
                 <div style="width:40px;height:40px;background-color:lightgreen;display:inline-block;text-align:center;line-height:40px;">
-                    {{task.position}}
+                    {{content.position}}
                 </div>
-            {% elif task.status == False %}
+            {% elif content.status == False %}
                 <div style="width:40px;height:40px;background:red;display:inline-block;text-align:center;line-height:40px;">
-                    {{task.position}}
+                    {{content.position}}
                 </div>
             {% else %}
                 <div style="width:40px;height:40px;background:gray;display:inline-block;text-align:center;line-height:40px;">
-                    {{task.position}}
+                    {{content.position}}
                 </div>
             {% endif %}
         {% endfor %}
+    {% elif user.role == "teacher" %}
+        <table>
+            <tr>
+                <th>Student</th>
+                {% for content in course.contents %}
+                    <th>{{content.position}}</th>
+                {% endfor %}
+            </tr>
+            {% for student in overview %}
+                <tr>
+                    <td>{{student.name}}</td>
+                    {% for status in student.statuses %}
+                        <td>
+                            {% if status == True %}
+                                <div style="width:40px;height:40px;background-color:lightgreen;"></div>
+                            {% elif status == False %}
+                                <div style="width:40px;height:40px;background:red;"></div>
+                            {% else %}
+                                <div style="width:40px;height:40px;background:gray;"></div>
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
     {% endif %}
     <hr/>
 </div>

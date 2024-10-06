@@ -120,16 +120,13 @@ def get_course(id):
     if not course:
         return "Course not found", 404
 
-    overview = None
-    if (user["role"] == "student"):
+    overview =  None
+    if user["role"] == "student":
         overview = submissions.get_user_overview(user["id"], id)
         for i in range(0, len(course["contents"])):
-            course["contents"][i]["status"] = next(
-                task["status"] 
-                for task 
-                in overview
-                if task["position"] == course["contents"][i]["position"]
-            )
+            course["contents"][i]["status"] = overview[i]
+    elif user["role"] == "teacher":
+        overview = submissions.get_teacher_overview(id)
     
     error_msg = None
     if "course_error_msg" in session:

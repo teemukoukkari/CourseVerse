@@ -70,26 +70,54 @@ def create_free_response(student_id, content_info, answer):
         return False
 
     expr = "^(" + result.solution_regex + ")$"
-    flags = re.IGNORECASE if result.case_insensitive else None
+    flags = re.IGNORECASE if result.case_insensitive else re.NOFLAG
     correct = bool(re.match(expr, answer, flags))
     return create_raw(student_id, content_info["id"], answer, correct)
 
 def get_user_overview(student_id, course_id):
     sql = """
-        SELECT CC.position, BOOL_OR(S.correct) AS status
-        FROM course_contents CC
-        LEFT JOIN submissions S ON S.content_id=CC.id AND S.student_id=:student_id
-        WHERE CC.course_id=:course_id
-        GROUP BY CC.position
-        ORDER BY CC.position
+        SELECT ARRAY_AGG(status) AS statuses
+        FROM (
+            SELECT BOOL_OR(S.correct) AS status
+            FROM course_contents CC
+            LEFT JOIN submissions S
+                ON S.content_id=CC.id AND S.student_id=:student_id
+            WHERE CC.course_id=:course_id
+            GROUP BY CC.position
+        ) AS subquery;
     """
     params = {
         "student_id": student_id,
         "course_id": course_id
     }
+    result = db_execute(sql, params).fetchone()
+    return result.statuses
 
+def get_teacher_overview(course_id):
+    sql = """
+        SELECT 
+            U.username AS student,
+            (
+                SELECT ARRAY_AGG(status)
+                FROM (
+                    SELECT BOOL_OR(S.correct) AS status
+                    FROM course_contents CC
+                    LEFT JOIN submissions S
+                        ON S.content_id=CC.id AND S.student_id=E.student_id
+                    WHERE CC.course_id=E.course_id
+                    GROUP BY CC.position
+                ) AS subquery
+            ) AS statuses
+        FROM enrollments E
+        LEFT JOIN users U ON U.id=E.student_id
+        WHERE E.course_id=:course_id;
+    """
+    params = {
+        "course_id": course_id
+    }
     result = db_execute(sql, params).fetchall()
-    return list(map(lambda x: { 
-        "position": x.position,
-        "status": x.status
+
+    return list(map(lambda x: {
+        "name": x.student,
+        "statuses": x.statuses
     }, result))
