@@ -1,15 +1,27 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Register</h2>
-<form action="/register" method="POST">
-    username: <input type="text" name="username"/><br>
-    password: <input type="password" name="password"/><br>
-    role:
-    <select name="role">
-        <option value="student">student</option>
-        <option value="teacher">teacher</option>
-    </select><br>
-    <button type="submit">Register</button>
-</form>
-{% if error_msg %}<p style="color:red;">{{error_msg}}</p>{% endif %}
+<h3 class="text-center"><u>Register</u></h3>
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <form action="/register" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" name="username" required/>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" name="password" required/>
+            </div>
+            <div>
+                <label class="form-label">Role</label>
+                <select class="form-control" name="role" required>
+                    <option value="student">student</option>
+                    <option value="teacher">teacher</option>
+                </select><br>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+        </form>
+        {% include 'error_box.html' %}
+    </div>
+</div>
 {% endblock %}

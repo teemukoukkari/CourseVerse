@@ -10,28 +10,42 @@
             crossorigin="anonymous"
         >
         <title>CourseVerse</title>
+        <script>
+            if (window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.href);
+            }
+        </script>
     </head>
     <body>
         <div class="container">
-            <h1 class="text-center">CourseVerse</h1>
-            <div class="text-right">
-                {% if user != None %}
-                    Logged in as {{user.username}} ({{user.role}}). 
-                    <a href="/logout">
-                        <button class="btn btn-sm btn-outline-danger">Logout</button>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <a href="/" class="text-decoration-none text-dark">
+                        <h1 class="text-center">CourseVerse</h1>
                     </a>
-                {% else %}
-                    Not logged in.
-                    <a href="/login">
-                        <button class="btn btn-sm btn-outline-primary">Login</button>
-                    </a>
-                    <a href="/register">
-                        <button class="btn btn-sm btn-outline-primary">Register</button>
-                    </a>
-                {% endif %}
+                </div>
+                <div class="text-right col-md-4 p-3">
+                    {% if user != None %}
+                        Logged in as {{user.username}} ({{user.role}}). 
+                        <a href="/logout">
+                            <button class="btn btn-sm btn-outline-danger">Logout</button>
+                        </a>
+                    {% else %}
+                        Not logged in.
+                        <a href="/login">
+                            <button class="btn btn-sm btn-outline-primary">Login</button>
+                        </a>
+                        <a href="/register">
+                            <button class="btn btn-sm btn-outline-primary">Register</button>
+                        </a>
+                    {% endif %}
+                </div>
             </div>
-            <hr/>
-            {% block content %}{% endblock %}
+            <hr class="mt-0"/>
+            <div class="container">
+                {% block content %}{% endblock %}
+            </div>
         </div>
     </body>
 </html>
