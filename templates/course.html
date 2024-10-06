@@ -1,185 +1,161 @@
 {% extends "layout.html" %}
 {% block content %}
+{% include 'error_box.html' %}
 <div>
-    {% if error_msg %}<p style="color:red;">{{error_msg}}</p>{% endif %}
-    <h2>{{course.name}}</h2>
+    <h2><u>{{course.name}}</u></h2>
     <p>{{course.description}}</p>
-    <hr/>
 </div>
 
-<div>
-    <h2>Overview</h2>
+<div class="mt-2 border border-dark p-2">
+    <h3>Overview</h3>
+    <div class="">
     {% if user.role == "student" %}
         {% for content in course.contents %}
             {% if content.status == True %}
-                <div style="width:40px;height:40px;background-color:lightgreen;display:inline-block;text-align:center;line-height:40px;">
-                    {{content.position}}
-                </div>
+            <div style="width:40px;height:40px;background:lightgreen;display:inline-block;text-align:center;line-height:40px;">
+                {{content.position}}
+            </div>
             {% elif content.status == False %}
-                <div style="width:40px;height:40px;background:red;display:inline-block;text-align:center;line-height:40px;">
-                    {{content.position}}
-                </div>
+            <div style="width:40px;height:40px;background:red;display:inline-block;text-align:center;line-height:40px;">
+                {{content.position}}
+            </div>
             {% else %}
-                <div style="width:40px;height:40px;background:gray;display:inline-block;text-align:center;line-height:40px;">
-                    {{content.position}}
-                </div>
+            <div style="width:40px;height:40px;background:gray;display:inline-block;text-align:center;line-height:40px;">
+                {{content.position}}
+            </div>
             {% endif %}
         {% endfor %}
     {% elif user.role == "teacher" %}
-        <table>
-            <tr>
-                <th>Student</th>
-                {% for content in course.contents %}
-                    <th>{{content.position}}</th>
-                {% endfor %}
-            </tr>
-            {% for student in overview %}
-                <tr>
-                    <td>{{student.name}}</td>
-                    {% for status in student.statuses %}
-                        <td>
-                            {% if status == True %}
-                                <div style="width:40px;height:40px;background-color:lightgreen;"></div>
-                            {% elif status == False %}
-                                <div style="width:40px;height:40px;background:red;"></div>
-                            {% else %}
-                                <div style="width:40px;height:40px;background:gray;"></div>
-                            {% endif %}
-                        </td>
-                    {% endfor %}
-                </tr>
+    <table class="text-center">
+        <tr>
+            <th class="pl-4 pr-4">Student</th>
+            {% for content in course.contents %}
+                <th>{{content.position}}</th>
             {% endfor %}
-        </table>
+        </tr>
+        {% for student in overview %}
+        <tr>
+            <td>{{student.name}}</td>
+            {% for status in student.statuses %}
+            <td>
+                {% if status == True %}
+                <div style="width:40px;height:40px;background-color:lightgreen;"></div>
+                {% elif status == False %}
+                <div style="width:40px;height:40px;background:red;"></div>
+                {% else %}
+                <div style="width:40px;height:40px;background:gray;"></div>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
     {% endif %}
-    <hr/>
+    </div>
 </div>
 
-<div>
-    <h2>Content</h2>
+{% if user.role == "teacher" %}
+{% include "add_content_box.html" %}
+{% endif %}
+
+<hr>
+
+<div class="mt-2">
+    <h3>Course material</h3>
     {% for content in course.contents %}
         {% if user.role == "student" %}
             {% if content.status == True %}
-            <div style="border:2px solid green; margin:3px;">
+            <div class="border border-success m-2 p-1 mb-2" style="border-width: 2px !important;">
             {% elif content.status == False %}
-            <div style="border:2px solid red; margin:3px;">
+            <div class="border border-danger m-2 p-1 mb-2" style="border-width: 2px !important;">
             {% else %}
-            <div style="border:2px solid black; margin:3px;">
+            <div class="border border-dark m-2 p-1 mb-2" style="border-width: 2px !important;">
             {% endif %}
-            <form action="/submit" method="POST">
-                <input type="hidden" name="content_id" value="{{content.id}}"/>
-                {% if content.type == "material" %}
-                <strong>{{content.position}}. {{content.title}}</strong><br/>
-                    {{content.text}}
-                    <button type="submit" name="status" value="1">Submit &#128077;</button>
-                    <button type="submit" name="status" value="0">Submit &#128078;</button>
-                {% elif content.type == "multiple_choice" %}
-                    <strong>{{content.position}}. {{content.question}}</strong>
-                    {% for choice in content.choices %}
-                        <input type="checkbox" name="choice_{{choice}}"/>
-                        {{choice}}
-                    {% endfor %}
-                    <button type="submit">Submit</button>
-                {% elif content.type == "free_response" %}
-                    <strong>{{content.position}}. {{content.question}}<br/></strong>
-                    <input type="text" name="answer"/>
-                    <button type="submit">Submit</button>
-                {% endif %}
-            </form>
-        </div>
+                <h4><strong>{{content.position}}. {{content.title}}</strong></h4>
+                <form action="/submit" method="POST">
+                    <input type="hidden" name="content_id" value="{{content.id}}"/>
+                    {% if content.type == "material" %}
+                        <div>
+                            {{content.text}}<br>
+                            <button
+                                class="btn btn-sm btn-success mt-2"
+                                type="submit"
+                                name="status"
+                                value="1"
+                            >Submit &#128077;</button>
+                            <button
+                                class="btn btn-sm btn-danger mt-2"
+                                type="submit"
+                                name="status"
+                                value="0"
+                            >Submit &#128078;</button>
+                        </div>
+                    {% elif content.type == "multiple_choice" %}
+                        {% for choice in content.choices %}
+                        <div class="d-inline ml-3">
+                            <input
+                                type="checkbox"
+                                name="choice_{{choice}}"
+                                style="transform: scale(1.5);"
+                            /> 
+                            <label class="form-label">&nbsp;{{choice}}</label>
+                            <br>
+                        </div>
+                        {% endfor %}
+                        <button class="btn btn btn-primary m-1">Submit</button>
+                    {% elif content.type == "free_response" %}
+                        <div class="m-1">
+                            <input class="form-control" type="text" name="answer"/>
+                            <button class="btn btn btn-primary mt-1">Submit</button>
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
         {% elif user.role == "teacher" %}
-        <div style="border:1px solid black; margin:3px;">
-            {% if content.type == "material" %}
-                <strong>{{content.position}}. {{content.title}}</strong><br/>
-                {{content.text}}
-            {% elif content.type == "multiple_choice" %}
-                <strong>{{content.position}}. {{content.question}}</strong><br/>
-                {% for choice in content.choices %}
-                    <input
-                        type="checkbox"
-                        name="choice_{{choice}}"
-                        {{'checked' if choice in content.correct_choices}}
-                        disabled
-                    /> 
-                    {{choice}}
-                {% endfor %}
-            {% elif content.type == "free_response" %}
-            <strong>{{content.position}}. {{content.question}}</strong><br/>
-                <input type="text" name="answer"/> (solution: '{{content.solution_regex}}')
-            {% endif %}
-            <form action="move_content" method="POST">
-                <input type="hidden" name="position" value="{{content.position}}"/>
-                Move: 
-                <button type="submit" name="action" value="top">top</button>
-                <button type="submit" name="action" value="up">up</button>
-                <button type="submit" name="action" value="down">down</button>
-                <button type="submit" name="action" value="bottom">bottom</button>
-            </form>
-            <form action="delete_content" method="POST">
-                <input type="hidden" name="content_id" value="{{content.id}}"/>
-                <input type="hidden" name="position" value="{{content.position}}"/>
-                <button type="submit">Delete</button>
-            </form>
-        </div>
+            <div class="border border-dark m-2 p-1">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4><strong>{{content.position}}. {{content.title}}</strong></h4>
+                    <div class="d-flex">
+                        <form class="d-inline" action="move_content" method="POST">
+                            <input type="hidden" name="position" value="{{content.position}}"/>
+                            <button class="btn btn-sm btn-info" type="submit" name="action" value="top">top</button>
+                            <button class="btn btn-sm btn-info" type="submit" name="action" value="up">up</button>
+                            <button class="btn btn-sm btn-info" type="submit" name="action" value="down">down</button>
+                            <button class="btn btn-sm btn-info" type="submit" name="action" value="bottom">bottom</button>
+                        </form>
+                        <form class="d-inline" action="delete_content" method="POST">
+                            <input type="hidden" name="content_id" value="{{content.id}}"/>
+                            <input type="hidden" name="position" value="{{content.position}}"/>
+                            <button class="btn btn-sm btn-danger ml-1" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </div>
+
+                {% if content.type == "material" %}
+                    <p>{{content.text}}</p>
+                {% elif content.type == "multiple_choice" %}
+                    {% for choice in content.choices %}
+                        <div class="d-inline ml-3">
+                            <input
+                                type="checkbox"
+                                name="choice_{{choice}}"
+                                style="transform: scale(1.5);"
+                                {{'checked' if choice in content.correct_choices}}
+                                disabled
+                            /> 
+                            <label class="form-label">&nbsp;{{choice}}</label>
+                            <br>
+                        </div>
+                    {% endfor %}
+                {% elif content.type == "free_response" %}
+                    <div class="m-2">
+                        <input type="text" name="answer" value={{content.solution_regex}} disabled/>
+                    </div>
+                {% endif %}
+            </div>
         {% endif %}
     {% endfor %}
     <hr/>
 </div>
 
-{% if user.role == "teacher" %}
-    <div>
-        <h2>Add content</h2>
-        <div>
-            <h3>Text material</h3>
-            <form action="add_material" method="POST">
-                Title: <input type="text" name="title"/><br>
-                Content:<br/>
-                <textarea type="text" name="content"></textarea><br/>
-                <button type="submit">Create</button>
-            </form>
-        </div>
-        <div>
-            <h3>Multiple choice question</h3>
-            <form action="add_multiple_choice" method="POST" id="mcq_form">
-                Question: <input type="text" name="question"/><br>
-                Choices:
-            </form>
-            <div>
-                <button onclick="mcq_add_choise()">Add</button> 
-                <button onclick="mcq_remove_choice()">Remove</button><br>
-                <button onClick="mcq_submit()">Create</button>
-            </div>
-        </div>
-        <div>
-            <h3>Free-response question</h3>
-            <form action="add_free_response" method="POST">
-                Question: <input type="text" name="question"/><br/>
-
-                Solution pattern (regex):
-                <input
-                    type="text"
-                    name="solution_regex"
-                    id="frq_solution_regex"
-                    onkeyup="frq_regex_test()"
-                />
-                <input
-                    type="checkbox"
-                    name="case_insensitive"
-                    id="frq_case_insensitive"
-                    onchange="frq_regex_test()"
-                /> case insensitive<br/>
-            
-                Test your pattern with input:
-                <input
-                    type="text"
-                    id="frq_test_string"
-                    onkeyup="frq_regex_test()"
-                />
-                <span id="frq_test_result"></span><br/>
-            
-                <button type="submit">Create</button>
-            </form>
-        </div>
-        <script type="text/javascript">{% include "course_teacher.js" %}</script>
-    </div>
-{% endif %}
 {% endblock %}

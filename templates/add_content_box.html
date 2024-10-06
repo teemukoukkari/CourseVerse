@@ -1,0 +1,178 @@
+
+<div class="mt-2 border border-dark p-2">
+    <h3>Add course content</h3>
+    <ul class="nav nav-pills mb-3">
+        <li class="nav-item">
+            <button class="nav-link" id="nav_0" onclick="select_tab(0)">
+                Text material
+            </button>
+        </li>
+        <li class="nav-item ml-2">
+            <button class="nav-link" id="nav_1" onclick="select_tab(1)">
+                Multiple choice
+            </button>
+        </li>
+        <li class="nav-item ml-2">
+            <button class="nav-link" id="nav_2" onclick="select_tab(2)">
+                Free response
+            </button>
+        </li>
+    </ul>
+
+    <div id="tab_0">
+        <form action="add_material" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Title</label>
+                <input class="form-control" type="text" name="title" required/>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Content</label>
+                <textarea
+                    type="text"
+                    style="width: 100%; resize: none; overflow: hidden;"
+                    name="content"
+                    oninput="desc_input(this)"
+                    required
+                ></textarea>
+                <script>
+                    function desc_input(t) {
+                        t.style.height = "auto";
+                        t.style.height = (t.scrollHeight) + "px";
+                    }
+                </script>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Create</button>
+        </form>
+    </div>
+
+    <div id="tab_1">
+        <form action="add_multiple_choice" method="POST" id="mcq_form">
+            <div class="mb-3">
+                <label class="form-label">Question</label>
+                <input class="form-control" type="text" name="question" required/>
+            </div>
+            <label class="form-label mb-0">Choices</label>
+            <!-- Javascript adds choices -->
+        </form>
+        <div>
+            <button class="btn btn-sm btn-info" onclick="mcq_add_choice()">Add</button> 
+            <button class="btn btn-sm btn-info" onclick="mcq_remove_choice()">Remove</button><br>
+            <button class="btn btn-primary w-100 mt-2" onClick="mcq_submit()">Create</button>
+        </div>
+    </div>
+
+    <div id="tab_2">
+        <form action="add_free_response" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Question</label>
+                <input class="form-control" type="text" name="question" required/>
+            </div>
+            <div class="mb-3"></div>
+                <label class="form-label">Solution pattern (regex)</label>
+                <input
+                    class="form-control"
+                    type="text"
+                    name="question"
+                    id="frq_solution_regex"
+                    onkeyup="frq_regex_test()"
+                    required
+                />
+                <input
+                    type="checkbox"
+                    name="case_insensitive"
+                    id="frq_case_insensitive"
+                    onchange="frq_regex_test()"
+                /> case insensitive<br/>
+                <label class="form-label">Test your pattern with input</label>
+                <input
+                    class="form-control"
+                    type="text"
+                    id="frq_test_string"
+                    onkeyup="frq_regex_test()"
+                />
+                <button class="btn btn-primary w-100 mt-2" onClick="mcq_submit()">Create</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        select_tab(0)
+        function select_tab(tab) {
+            document.getElementById("tab_0").style = "display:none;";
+            document.getElementById("tab_1").style = "display:none;";
+            document.getElementById("tab_2").style = "display:none;";
+
+            document.getElementById("nav_0").setAttribute("class", "nav-link");
+            document.getElementById("nav_1").setAttribute("class", "nav-link");
+            document.getElementById("nav_2").setAttribute("class", "nav-link");
+
+            document.getElementById("tab_" + tab).style = "display:block";
+            document.getElementById("nav_" + tab).setAttribute("class", "nav-link active");
+        }
+    </script>
+
+    <script>
+        var mcq_choice_count = 0;
+        
+        mcq_add_choice();
+        mcq_add_choice();
+        mcq_add_choice();
+        mcq_add_choice();
+        
+        function mcq_add_choice() {
+            const checkbox = document.createElement("input");
+            checkbox.setAttribute("class", "ml-2");
+            checkbox.setAttribute("style", "transform: scale(1.5);");
+            checkbox.setAttribute("type", "checkbox");
+            checkbox.setAttribute("name", "correct_" + mcq_choice_count);
+        
+            const text = document.createElement("input");
+            text.setAttribute("class", "ml-2 w-75");
+            text.setAttribute("type", "text");
+            text.setAttribute("name", "answer_" + mcq_choice_count);
+        
+            const div = document.createElement("div");
+            div.setAttribute("class", "mb-2");
+            div.setAttribute("id", "mcq_choice" + mcq_choice_count);
+            div.appendChild(checkbox);
+            div.appendChild(text);
+        
+            document.getElementById("mcq_form").append(div);
+            mcq_choice_count++;
+        }
+        
+        function mcq_remove_choice() {
+            if (mcq_choice_count < 2) return;
+            const div = document.getElementById("mcq_choice" + (mcq_choice_count-1));
+            div.parentNode.removeChild(div);
+            mcq_choice_count--;
+        }
+        
+        function mcq_submit() {
+            document.getElementById("mcq_form").submit();
+        }
+    
+    </script>
+
+    <script>
+        function frq_regex_test() {
+            const solution_regex = document.getElementById("frq_solution_regex").value;
+            const case_insentive = document.getElementById("frq_case_insensitive").checked;
+            const test_string = document.getElementById("frq_test_string").value;
+        
+            try {
+                const expr = new RegExp("^(" + solution_regex + ")$", case_insentive ? "i" : "");
+                const result = test_string.match(expr);
+        
+                const style = result ? "border:2px solid green;" : "border:2px solid red;";
+                document.getElementById("frq_test_string").setAttribute(
+                    "style", style
+                )
+            } catch(e) {
+                document.getElementById("frq_solution_regex").setAttribute(
+                    "style", "border:2px solid red;"
+                )
+            }
+        }
+    </script>
+</div>

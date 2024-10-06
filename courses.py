@@ -77,12 +77,12 @@ def get(course_id):
             "text": x.m_content
         })
         elif x.type == "multiple_choice": return dict(common, **{
-            "question": x.mcq_question,
+            "title": x.mcq_question,
             "choices": x.mcq_choices.split(";"),
             "correct_choices": x.mcq_correct_choices.split(";")
         })
         elif x.type == "free_response": return dict(common, **{
-            "question": x.frq_question,
+            "title": x.frq_question,
             "solution_regex": x.frq_solution_regex,
             "case_insensitive": x.frq_case_insensitive
         })
