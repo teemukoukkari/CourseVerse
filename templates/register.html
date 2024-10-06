@@ -20,6 +20,7 @@
                 </select><br>
             </div>
             <button type="submit" class="btn btn-primary w-100">Register</button>
+            <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
         </form>
         {% include 'error_box.html' %}
     </div>

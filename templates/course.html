@@ -109,6 +109,7 @@
                             <button class="btn btn btn-primary mt-1">Submit</button>
                         </div>
                     {% endif %}
+                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
                 </form>
             </div>
         {% elif user.role == "teacher" %}
@@ -122,11 +123,13 @@
                             <button class="btn btn-sm btn-info" type="submit" name="action" value="up">up</button>
                             <button class="btn btn-sm btn-info" type="submit" name="action" value="down">down</button>
                             <button class="btn btn-sm btn-info" type="submit" name="action" value="bottom">bottom</button>
+                            <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
                         </form>
                         <form class="d-inline" action="delete_content" method="POST">
                             <input type="hidden" name="content_id" value="{{content.id}}"/>
                             <input type="hidden" name="position" value="{{content.position}}"/>
                             <button class="btn btn-sm btn-danger ml-1" type="submit">Delete</button>
+                            <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
                         </form>
                     </div>
                 </div>

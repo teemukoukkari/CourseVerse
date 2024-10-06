@@ -13,6 +13,7 @@
                 <input type="password" class="form-control" name="password" required/>
             </div>
             <button type="submit" class="btn btn-primary w-100">Login</button>
+            <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
         </form>
         {% include 'error_box.html' %}
     </div>
