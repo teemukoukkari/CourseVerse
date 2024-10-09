@@ -12,50 +12,39 @@ Sovelluksen ominaisuuksia:
 - [x] Opettaja pystyy vaihtamaan lisätyn materiaalin ja tehtävien järjestystä kurssisivulla
 - [x] Opettaja pystyy näkemään kurssistaan tilaston, keitä opiskelijoita on kurssilla ja mitkä kurssin tehtävät kukin on ratkonut.
 
-## Sovelluksen testaaminen
+## Sovelluksen testaaminen verkossa
 Sovellus on hostattuna osoitteessa [https://courseverse-w2hm.onrender.com/courses](https://courseverse-w2hm.onrender.com/courses). Siellä on myös esimerkkikurssi valmiiksi. Kyseessä on ilmainen tilaus, joten on yleistä, että sivun ensimmäinen lataus voi kestää yli minuutin. Tämän jälkeen sivu toimii kuitenkin yleensä hyvin.
 
-<details>
-<summary>Sovelluksen testaaminen (Docker)</summary>
-
-### Sovelluksen testaaminen (Docker)
-Mikäli olet käyttänyt Dockeria aikaisemmin ja se on asennettuna, tämä lienee vaivattomin tapa saada sovellus käyntiin omalla koneella.
-
-Kloonaa repo, siirry sen juurihakemistoon ja käynnistä sovellus  porttiin 8080 komennolla
-```
-$ docker dompose up
-```
-
-Huomaa, että postgres-tunnukset ja secret_key ovat selväkielisenä .yml-tiedostossa - tämä on toistaiseksi vain testaamista varten.
-</details>
-
-<details>
-<summary>Sovelluksen testaaminen (perinteinen)</summary>
-
-### Sovelluksen testaaminen (perinteinen)
+## Sovelluksen testaaminen omalla koneella
 Vaihtoehtoisesti voit ottaa sovelluksen käyttöön kurssimateriaalissa esitetyllä tavalla. Edellytyksenä on, että postgres on asennettuna valmiiksi.
 
-Kloonaa tämä repositorio omalle koneellesi ja siirry sen juurikansioon. Luo kansioon .env-tiedosto ja määritä sen sisältö seuraavanlaiseksi:
+Kloonaa tämä repositorio omalle koneellesi ja siirry sen juurihakemistoon.
 
+Luo aluksi Postgresiin tietokanta sovellusta varten. Esimerkiksi:
 ```
-DATABASE_URI=<tietokannen-paikallinen-osoite>
+$ psql
+user=# CREATE DATABASE courseverse;
+```
+
+Tämän jälkeen määritä tietokannan skeema:
+```
+$ psql -d courseverse < schema.sql
+```
+
+Luo projektin juurihakemistoon .env-tiedosto, jonka sisältö on esimerkiksi seuraava:
+```
+DATABASE_URI=postgresql:///courseverse
 SECRET_KEY=<salainen-avain>
 ```
 
-Seuraavaksi aktivoi virtuaaliympäristö ja asenna sovelluksen riippuvuudet komnnoilla
+Seuraavaksi aktivoi virtuaaliympäristö ja asenna sovelluksen riippuvuudet komennoilla
 ```
 $ python3 -m venv venv
 $ source venv/bin/activate
 $ pip install -r ./requirements.txt
 ```
 
-Määritä vielä tietokannan skeema komennolla (varmista, että tietokanta on tyhjä ennen tätä)
-```
-$ psql < schema.sql
-```
-
 Nyt voit käynnistää sovelluksen komennolla
 ```
 $ flask run
 ```
-</details>
