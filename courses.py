@@ -88,8 +88,8 @@ def get(course_id):
         })
         elif x.type == "multiple_choice": return dict(common, **{
             "title": x.mcq_question,
-            "choices": x.mcq_choices.split(";"),
-            "correct_choices": x.mcq_correct_choices.split(";")
+            "choices": x.mcq_choices.split(chr(31)),
+            "correct_choices": x.mcq_correct_choices.split(chr(31))
         })
         elif x.type == "free_response": return dict(common, **{
             "title": x.frq_question,
@@ -164,8 +164,8 @@ def add_multiple_choice(course_id, question, choices, correct_choices):
     """
     params = {
         "question": question,
-        "choices": ";".join(choices),
-        "correct_choices": ";".join(correct_choices)
+        "choices": chr(31).join(choices),
+        "correct_choices": chr(31).join(correct_choices)
     }
     res = db_execute(sql, params)
 

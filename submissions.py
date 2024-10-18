@@ -55,7 +55,7 @@ def create_multiple_choice(student_id, content_info, choices):
     if not result:
         return False
     
-    correct_choices = result.correct_choices.split(";")
+    correct_choices = result.correct_choices.split(chr(31))
     correct = set(choices) == set(correct_choices)
     return create_raw(student_id, content_info["id"], ";".join(choices), correct)
 
