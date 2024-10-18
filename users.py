@@ -19,12 +19,12 @@ def login(username, password):
     user = db_execute(sql, {"username": username}).fetchone()
 
     if user:
-        id, username, password_hash, role = user
+        user_id, username, password_hash, role = user
         if bcrypt.check_password_hash(password_hash, password):
-            session["user"] = { "id": id, "username": username, "role": role }
+            session["user"] = { "id": user_id, "username": username, "role": role }
             load_enrollments()
             return True
-    
+
     return False
 
 def register(username, password, role):
@@ -49,19 +49,18 @@ def logout():
         del session["user"]
 
 def load_enrollments():
-    if "user" in session and session["user"]["role"] == "student":
-        sql = """
-            SELECT course_id
-            FROM enrollments
-            WHERE student_id=:student_id
-        """
-        result = db_execute(sql, {
-            "student_id": session["user"]["id"]}
-        ).fetchall()
+    if "user" not in session or session["user"]["role"] != "student":
+        return
 
-        session["user"] = dict(session["user"], **{
-            "enrollments": list(map(lambda x: x.course_id, result))
-        })
-        return True
-    else:
-        return False
+    sql = """
+        SELECT course_id
+        FROM enrollments
+        WHERE student_id=:student_id
+    """
+    result = db_execute(sql, {
+        "student_id": session["user"]["id"]}
+    ).fetchall()
+
+    session["user"] = dict(session["user"], **{
+        "enrollments": list(map(lambda x: x.course_id, result))
+    })

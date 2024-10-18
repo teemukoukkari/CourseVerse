@@ -1,4 +1,3 @@
-import users
 from db import db_execute, db_commit
 
 def get_list():
@@ -82,21 +81,25 @@ def get(course_id):
             "position": x.position,
             "type": x.type
         }
-        if x.type == "material": return dict(common, **{
-            "title": x.m_title,
-            "text": x.m_content
-        })
-        elif x.type == "multiple_choice": return dict(common, **{
-            "title": x.mcq_question,
-            "choices": x.mcq_choices.split(chr(31)),
-            "correct_choices": x.mcq_correct_choices.split(chr(31))
-        })
-        elif x.type == "free_response": return dict(common, **{
-            "title": x.frq_question,
-            "solution_regex": x.frq_solution_regex,
-            "case_insensitive": x.frq_case_insensitive
-        })
-        
+        if x.type == "material":
+            return dict(common, **{
+                "title": x.m_title,
+                "text": x.m_content
+            })
+        if x.type == "multiple_choice":
+            return dict(common, **{
+                "title": x.mcq_question,
+                "choices": x.mcq_choices.split(chr(31)),
+                "correct_choices": x.mcq_correct_choices.split(chr(31))
+            })
+        if x.type == "free_response":
+            return dict(common, **{
+                "title": x.frq_question,
+                "solution_regex": x.frq_solution_regex,
+                "case_insensitive": x.frq_case_insensitive
+            })
+        return None
+
     return {
         "id": course[0],
         "name": course[1],
@@ -150,7 +153,7 @@ def add_material(course_id, title, content):
     """
     res = db_execute(sql, {"title": title, "content": content})
 
-    if res == None:
+    if res is None:
         return False
     return add_content(course_id, "material", res.fetchone().id)
 
@@ -169,7 +172,7 @@ def add_multiple_choice(course_id, question, choices, correct_choices):
     }
     res = db_execute(sql, params)
 
-    if res == None:
+    if res is None:
         return False
     return add_content(course_id, "multiple_choice", res.fetchone().id)
 
@@ -188,7 +191,7 @@ def add_free_response(course_id, question, solution_regex, case_insensitive):
     }
     res = db_execute(sql, params)
 
-    if res == None:
+    if res is None:
         return False
     return add_content(course_id, "free_response", res.fetchone().id)
 
@@ -269,7 +272,7 @@ def move_content(course_id, old_position, action):
         END)
         WHERE course_id=:course_id AND position>=:old_position
     """
-    
+
     params = {
         "course_id": course_id,
         "old_position": old_position
@@ -277,11 +280,11 @@ def move_content(course_id, old_position, action):
 
     if action == "top":
         return db_commit(sql_top, params)
-    elif action == "up":
+    if action == "up":
         return db_commit(sql_up, params)
-    elif action == "down":
+    if action == "down":
         return db_commit(sql_down, params)
-    elif action == "bottom":
+    if action == "bottom":
         return db_commit(sql_bottom, params)
 
     return False

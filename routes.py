@@ -1,7 +1,9 @@
 import re
 from flask import request, render_template, session, redirect
 from app import app
-import users, courses, submissions
+import users
+import courses
+import submissions
 
 def form_get(*fields):
     return tuple(request.form.get(field, None) for field in fields)
@@ -14,17 +16,17 @@ def index():
 def login():
     if users.get():
         return redirect('/')
-    
+
     if request.method == "GET":
         return render_template("login.html", user=None)
-    
+
     error_msg = None
     username, password = form_get("username", "password")
     if not (username and password):
         error_msg = "Required fields are missing"
     elif not users.login(username, password):
         error_msg = "Wrong username or password."
-    
+
     if error_msg:
         return render_template("login.html", user=None, error_msg=error_msg)
     return redirect("/")
@@ -35,7 +37,7 @@ def register():
         return redirect('/')
     if request.method == "GET":
         return render_template("register.html", user=None)
-    
+
     error_msg = None
     username, password, role = form_get("username", "password", "role")
     if not (username and password and role):
@@ -52,7 +54,7 @@ def register():
         error_msg = "Invalid role."
     elif not users.register(username, password, role):
         error_msg = "Failed to register. Username may be already taken."
-    
+
     if error_msg:
         return render_template("register.html", user=None, error_msg=error_msg)
     return redirect("/")
@@ -82,28 +84,28 @@ def create_course():
         error_msg = "Course description can be at most 256 characters long."
     elif not courses.create(name, description, user["id"]):
         error_msg = "Failed to create course. Course name may be already taken."
-    
+
     course_list = courses.get_list()
     return render_template(
         "courses.html", user=user, courses=course_list, error_msg=error_msg
     )
 
-@app.route("/courses/<id>/delete")
-def delete_course(id):
+@app.route("/courses/<course_id>/delete")
+def delete_course(course_id):
     user = users.get()
     if not (user and user["role"] == "teacher"):
         return "You must be logged in as teacher to do this", 403
-    
-    courses.delete(id)
+
+    courses.delete(course_id)
     return redirect("/")
 
-@app.route("/courses/<id>/enroll")
-def enroll(id):
+@app.route("/courses/<course_id>/enroll")
+def enroll(course_id):
     user = users.get()
     if not (user and user["role"] == "student"):
         return "You must be logged in as a student to do this", 403
-    
-    if not courses.enroll(id, user["id"]):
+
+    if not courses.enroll(course_id, user["id"]):
         course_list = courses.get_list()
         error_msg = "Failed to enroll to the course."
         return render_template(
@@ -112,31 +114,31 @@ def enroll(id):
         )
 
     users.load_enrollments()
-    
-    return redirect("/courses/" + id)   
 
-@app.route("/courses/<id>/")
-def get_course(id):
+    return redirect("/courses/" + course_id)
+
+@app.route("/courses/<course_id>/")
+def get_course(course_id):
     user = users.get()
     if not user:
         return "You must be logged in to do this", 403
-    if not id.isdecimal():
+    if not course_id.isdecimal():
         return "Invalid id", 400
-    if user["role"] == "student" and int(id) not in user["enrollments"]:
+    if user["role"] == "student" and int(course_id) not in user["enrollments"]:
         return "You are not enrolled to this course!", 403
 
-    course = courses.get(id)
+    course = courses.get(course_id)
     if not course:
         return "Course not found", 404
 
     overview =  None
     if user["role"] == "student":
-        overview = submissions.get_user_overview(user["id"], id)
+        overview = submissions.get_user_overview(user["id"], course_id)
         for i in range(0, len(course["contents"])):
             course["contents"][i]["status"] = overview[i]
     elif user["role"] == "teacher":
-        overview = submissions.get_teacher_overview(id)
-    
+        overview = submissions.get_teacher_overview(course_id)
+
     error_msg = None
     if "course_error_msg" in session:
         error_msg = session["course_error_msg"]
@@ -147,8 +149,8 @@ def get_course(id):
         user=user, course=course, overview=overview, error_msg=error_msg
     )
 
-@app.route("/courses/<id>/add_material", methods=["POST"])
-def add_material(id):
+@app.route("/courses/<course_id>/add_material", methods=["POST"])
+def add_material(course_id):
     user = users.get()
     if not (user and user["role"] == "teacher"):
         return "You must be logged in as teacher to do this", 403
@@ -157,14 +159,14 @@ def add_material(id):
     title, content = form_get("title", "content")
     if not (title and content):
         error_msg = "Required fields are missing."
-    elif not courses.add_material(id, title, content):
+    elif not courses.add_material(course_id, title, content):
         error_msg = "Failed to create material."
 
     session["course_error_msg"] = error_msg
-    return redirect("/courses/" + id)
+    return redirect("/courses/" + course_id)
 
-@app.route("/courses/<id>/add_multiple_choice", methods=["POST"])
-def add_multiple_choice(id):
+@app.route("/courses/<course_id>/add_multiple_choice", methods=["POST"])
+def add_multiple_choice(course_id):
     user = users.get()
     if not (user and user["role"] == "teacher"):
         return "You must be logged in as teacher to do this", 403
@@ -184,23 +186,25 @@ def add_multiple_choice(id):
     error_msg = None
     if not (question and choices):
         error_msg = "Question or choices are missing."
-    elif not courses.add_multiple_choice(id, question, choices, correct_choices):
+    elif not courses.add_multiple_choice(course_id, question, choices, correct_choices):
         error_msg = "Failed to create multiple choice question."
 
     session["course_error_msg"] = error_msg
-    return redirect("/courses/" + id)
+    return redirect("/courses/" + course_id)
 
 def check_regex(s):
-    try: re.compile(s)
-    except Exception: return False
-    return True 
+    try:
+        re.compile(s)
+    except re.error:
+        return False
+    return True
 
-@app.route("/courses/<id>/add_free_response", methods=["POST"])
-def add_free_response(id):
+@app.route("/courses/<course_id>/add_free_response", methods=["POST"])
+def add_free_response(course_id):
     user = users.get()
     if not (user and user["role"] == "teacher"):
         return "You must be logged in as teacher to do this", 403
-    
+
     error_msg = None
     question, solution_regex = form_get("question", "solution_regex")
     case = "case_insensitive" in request.form
@@ -208,50 +212,50 @@ def add_free_response(id):
         error_msg = "Required fields are missing."
     elif not check_regex("^(" + solution_regex + ")$"):
         error_msg = "Invalid solution regex."
-    elif not courses.add_free_response(id, question, solution_regex, case):
+    elif not courses.add_free_response(course_id, question, solution_regex, case):
         error_msg = "Failed to create free reponse question."
 
     session["course_error_msg"] = error_msg
-    return redirect("/courses/" + id)
+    return redirect("/courses/" + course_id)
 
-@app.route("/courses/<id>/delete_content", methods=["POST"])
-def delete_content(id):
+@app.route("/courses/<course_id>/delete_content", methods=["POST"])
+def delete_content(course_id):
     user = users.get()
     if not (user and user["role"] == "teacher"):
         return "You must be logged in as teacher to do this", 403
-    
+
     error_msg = None
     content_id, position = form_get("content_id", "position")
     if not (content_id and position):
         error_msg = "Required fields are missing."
-    elif not courses.delete_content(id, content_id, position):
+    elif not courses.delete_content(course_id, content_id, position):
         error_msg = "Failed to delete content."
 
     session["course_error_msg"] = error_msg
-    return redirect("/courses/" + id) 
+    return redirect("/courses/" + course_id)
 
-@app.route("/courses/<id>/move_content", methods=["POST"])
-def move_content(id):
+@app.route("/courses/<course_id>/move_content", methods=["POST"])
+def move_content(course_id):
     user = users.get()
     if not (user and user["role"] == "teacher"):
         return "You must be logged in as teacher to do this", 403
-    
+
     error_msg = None
     old_position, action = form_get("position", "action")
     if not (old_position and action in ("top", "up", "down", "bottom")):
         error_msg = "Required fields are missing or invalid."
-    if not courses.move_content(id, old_position, action):
+    if not courses.move_content(course_id, old_position, action):
         error_msg = "Failed to move content."
-    
+
     session["course_error_msg"] = error_msg
-    return redirect("/courses/" + id) 
+    return redirect("/courses/" + course_id)
 
 @app.route("/submit", methods=["POST"])
 def submit():
     user = users.get()
     if not (user and user["role"] == "student"):
         return "You must be logged in as a student to do this", 403
-    
+
     content_id, = form_get("content_id")
     if not content_id:
         return "Required field is missing", 400
@@ -263,7 +267,7 @@ def submit():
     error_msg = None
     if info["type"] == "material":
         status, = form_get("status")
-        if not (status in ("0", "1")):
+        if not status in ("0", "1"):
             error_msg = "Required field is missing or invalid."
         elif not submissions.create_course_material(user["id"], info, status):
             error_msg = "Failed to create submission for text material."

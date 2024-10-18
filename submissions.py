@@ -17,7 +17,7 @@ def get_content_info(content_id):
     result = db_execute(sql, {"content_id": content_id}).fetchone()
     if not result:
         return None
-    
+
     return {
         "id": content_id,
         "course_id": result.course_id,
@@ -54,7 +54,7 @@ def create_multiple_choice(student_id, content_info, choices):
     result = db_execute(sql, {"id": content_info["target_id"]}).fetchone()
     if not result:
         return False
-    
+
     correct_choices = result.correct_choices.split(chr(31))
     correct = set(choices) == set(correct_choices)
     return create_raw(student_id, content_info["id"], ";".join(choices), correct)
