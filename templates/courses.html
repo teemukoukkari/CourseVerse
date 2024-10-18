@@ -18,13 +18,19 @@
             <td>{{ course.teacher }}</td>
             <td>
                 {% if user.role == "teacher" %}
-                <a href="/courses/{{ course.id }}" class="btn btn-secondary">Manage</a>
-                <a href="/courses/{{ course.id }}/delete" class="btn btn-danger">Delete</a>
+                <form action="/courses/{{course.id}}/delete">
+                    <a href="/courses/{{course.id}}" class="btn btn-secondary">Manage</a>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+                </form>
                 {% elif user.role == "student" %}
                     {% if course.id in user.enrollments %}
                     <a href="/courses/{{ course.id }}/" class="btn btn-primary">View</a>
                     {% else %}
-                    <a href="/courses/{{ course.id }}/enroll" class="btn btn-success">Enroll</a>
+                    <form action="/courses/{{course.id}}/enroll">
+                        <button type="submit" class="btn btn-success">Enroll</button>
+                        <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+                    </form>
                     {% endif %}
                 {% endif %}
             </td>

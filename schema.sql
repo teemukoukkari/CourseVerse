@@ -44,8 +44,8 @@ CREATE TABLE course_contents (
 
 CREATE TABLE enrollments (
     id SERIAL PRIMARY KEY,
-    student_id INTEGER REFERENCES users NOT NULL,
-    course_id INTEGER REFERENCES courses NOT NULL
+    student_id INTEGER REFERENCES users ON DELETE CASCADE NOT NULL ,
+    course_id INTEGER REFERENCES courses ON DELETE CASCADE NOT NULL
 );
 
 CREATE TABLE submissions (
